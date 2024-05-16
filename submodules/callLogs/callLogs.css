@@ -254,3 +254,10 @@ body.colorblind #call_logs_container .grid-cell.direction .monster-green {
 body.colorblind #call_logs_container .grid-cell.direction .monster-orange {
 	color: #222 !important;
 }
+
+
+
+/* hide scroll wheel on call logs table */
+.call-logs-grid::-webkit-scrollbar {
+	display: none; /* Hide scrollbar in WebKit browsers */
+}

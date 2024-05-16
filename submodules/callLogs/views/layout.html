@@ -18,10 +18,21 @@
 				<span class="search-box">
 					<i class="fa fa-search"></i>
 					<input type="text" class="search-query" placeholder="{{i18n.table.search}}">
-				</span>
+				</span>	
 			</div>
+			
 		</div>
 
+	</div>
+			
+	<div class="fixed-ranges">
+		
+		<div class="download-button pull-right">
+			<span class="download-button">
+				<button type="button" class="monster-button monster-button-secondary download-csv"><i class="fa fa-download"></i>{{i18n.download}}</button>
+			</span>
+		</div>
+		
 		<div class="sub-ranges">
 			<div class="custom-range{{#compare type "===" "custom"}} active{{/compare}}">
 				<span>{{i18n.startDate}}</span>
@@ -36,46 +47,48 @@
 					{{ i18n.callLogs.callsFrom }} <span class="highlight-date">{{ toFriendlyDate fromDate "date"}}</span> {{ i18n.callLogs.callsTo }} <span class="highlight-date">{{ toFriendlyDate toDate "date" }}</span>
 				</div>
 			{{/if}}
-
-			<a href="#" role="button" class="monster-link download-csv"><i class="fa fa-download monster-green"></i>{{i18n.download}}</a>
-			<i class="help-popover fa fa-question" data-toggle="tooltip" data-placement="top" data-original-title="{{ i18n.callLogs.downloadTooltip }}"></i>
 		</div>
+	
 	</div>
 
 	<div class="call-logs-content">
+
+		<!-- this has been moved up so the title bar remains -->
+		<div class="grid-row header-row">
+			<div class="grid-cell direction">
+				<div class="sub-cell cell-top">
+					<i class="fa fa-arrow-right monster-green" title="{{i18n.callLogs.gridHeaders.inboundCall}}"></i>
+				</div>
+				<div class="sub-cell cell-bottom">
+					<i class="fa fa-arrow-left monster-orange" title="{{i18n.callLogs.gridHeaders.outboundCall}}"></i>
+				</div>
+			</div>
+			<div class="grid-cell datetime">
+				<div class="sub-cell cell-top">{{i18n.callLogs.gridHeaders.dateTime1}}</div>
+				<div class="sub-cell cell-bottom">{{timezone}}</div>
+			</div>
+			<div class="grid-cell from">
+				<div class="sub-cell single-cell">{{i18n.callLogs.gridHeaders.from}}</div>
+			</div>
+			<div class="grid-cell to">
+				<div class="sub-cell single-cell">{{i18n.callLogs.gridHeaders.to}}</div>
+			</div>
+			<div class="grid-cell duration">
+				<div class="sub-cell cell-top">{{i18n.callLogs.gridHeaders.duration1}}</div>
+				<div class="sub-cell cell-bottom">{{i18n.callLogs.gridHeaders.duration2}}</div>
+			</div>
+			<div class="grid-cell hangup">
+				<div class="sub-cell cell-top">{{i18n.callLogs.gridHeaders.hangup1}}</div>
+				<div class="sub-cell cell-bottom">{{i18n.callLogs.gridHeaders.hangup2}}</div>
+			</div>
+			<div class="grid-cell actions">
+				<div class="sub-cell single-cell">{{i18n.callLogs.gridHeaders.actions}}</div>
+			</div>
+		</div>
+
 		<div class="call-logs-grid">
 			<div class="grid-row-group">
-				<div class="grid-row header-row">
-					<div class="grid-cell direction">
-						<div class="sub-cell cell-top">
-							<i class="fa fa-arrow-right monster-green" title="{{i18n.callLogs.gridHeaders.inboundCall}}"></i>
-						</div>
-						<div class="sub-cell cell-bottom">
-							<i class="fa fa-arrow-left monster-orange" title="{{i18n.callLogs.gridHeaders.outboundCall}}"></i>
-						</div>
-					</div>
-					<div class="grid-cell datetime">
-						<div class="sub-cell cell-top">{{i18n.callLogs.gridHeaders.dateTime1}}</div>
-						<div class="sub-cell cell-bottom">{{timezone}}</div>
-					</div>
-					<div class="grid-cell from">
-						<div class="sub-cell single-cell">{{i18n.callLogs.gridHeaders.from}}</div>
-					</div>
-					<div class="grid-cell to">
-						<div class="sub-cell single-cell">{{i18n.callLogs.gridHeaders.to}}</div>
-					</div>
-					<div class="grid-cell duration">
-						<div class="sub-cell cell-top">{{i18n.callLogs.gridHeaders.duration1}}</div>
-						<div class="sub-cell cell-bottom">{{i18n.callLogs.gridHeaders.duration2}}</div>
-					</div>
-					<div class="grid-cell hangup">
-						<div class="sub-cell cell-top">{{i18n.callLogs.gridHeaders.hangup1}}</div>
-						<div class="sub-cell cell-bottom">{{i18n.callLogs.gridHeaders.hangup2}}</div>
-					</div>
-					<div class="grid-cell actions">
-						<div class="sub-cell single-cell">{{i18n.callLogs.gridHeaders.actions}}</div>
-					</div>
-				</div>
+				
 			</div>
 			<div class="grid-row no-match">
 				<div class="grid-cell full-width">{{i18n.callLogs.noSearchMatch}}</div>

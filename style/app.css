@@ -1,19 +1,11 @@
-@import url('../submodules/devices/devices.css');
-@import url('../submodules/groups/groups.css');
-@import url('../submodules/myOffice/myOffice.css');
-@import url('../submodules/numbers/numbers.css');
-@import url('../submodules/strategy/strategy.css');
+@import '../../../css/partials/base';
+
 @import url('../submodules/callLogs/callLogs.css');
-@import url('../submodules/users/users.css');
-@import url('../submodules/featureCodes/featureCodes.css');
-@import url('../submodules/vmboxes/vmboxes.css');
 
-#voip_container .left-menu #myOffice {
-	margin-bottom: 20px;
-}
 
-#voip_container .left-menu > div {
-	margin-top: 10px;
+.right-content {
+	margin: 0 auto !important; /* Center align */
+	width: 100% !important; /* Full width */
 }
 
 #voip_container_overlay {
@@ -24,4 +16,8 @@
 	height: 100%;
 	background-color: #000;
 	opacity: .3;
+}
+
+#spinner {
+	padding-top: 40%;
 }
