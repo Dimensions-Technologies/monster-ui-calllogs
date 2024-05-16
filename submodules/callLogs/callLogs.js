@@ -14,7 +14,7 @@ define(function(require) {
 		},
 
 		subscribe: {
-			'voip.callLogs.render': 'callLogsRender'
+			'callLogs.render': 'callLogsRender'
 		},
 
 		callLogsRender: function(args) {
@@ -38,6 +38,7 @@ define(function(require) {
 				self.appFlags.callLogs.devices = _.keyBy(results.devices, 'id');
 
 				globalCallback && globalCallback();
+
 			});
 		},
 
@@ -318,7 +319,7 @@ define(function(require) {
 			};
 		},
 
-		callLogsGetCdrs: function(fromDate, toDate, callback, pageStartKey) {
+		callLogsGetCdrs: function(fromDate, toDate, callback, pageStartKey, retryCount = 3) {
 			var self = this,
 				fromDateTimestamp = monster.util.dateToBeginningOfGregorianDay(fromDate),
 				toDateTimestamp = monster.util.dateToEndOfGregorianDay(toDate),
@@ -327,22 +328,46 @@ define(function(require) {
 					'created_to': toDateTimestamp,
 					'page_size': 50
 				};
-
+		
 			if (pageStartKey) {
 				filters.start_key = pageStartKey;
 			}
-
-			self.callApi({
-				resource: 'cdrs.listByInteraction',
-				data: {
-					accountId: self.accountId,
-					filters: filters
-				},
-				success: function(data, status) {
-					callback(data.data, data.next_start_key);
-				}
-			});
-		},
+		
+			var apiCall = function() {
+				console.log('Getting Call Details');
+				self.callApi({
+					resource: 'cdrs.listByInteraction',
+					data: {
+						accountId: self.accountId,
+						filters: filters,
+						generateError: false
+					},
+					
+					success: function(data, status) {
+						console.log('Getting Call Details Successful');
+						callback(data.data, data.next_start_key);
+					},
+					
+					error: function(data, status) {
+						console.log('Getting Call Details Error');
+						if (data.error === "503") {
+							console.log("503 error occurred, retrying...");
+							// wait 10 seconds
+							setTimeout(function() {
+								apiCall();
+							}, 10000);
+						} else {
+							console.error("API call failed:", data);
+						}
+					}
+				});
+			};
+		
+			// Call the API function
+			apiCall();
+			
+		},		
+		
 
 		callLogsGetLegs: function(callId, callback) {
 			var self = this;
@@ -450,6 +475,9 @@ define(function(require) {
 		},
 
 		callLogsShowDetailsPopup: function(callLogId) {
+
+			console.log('callLogsShowDetailsPopup');
+
 			var self = this;
 			self.callApi({
 				resource: 'cdrs.get',
