@@ -3,7 +3,7 @@
 	"i18n": {
 		"en-US": {
 			"label": "Call Logs",
-			"description": "Provides access to basic historcial call logs for the customer account.",
+			"description": "Provides access to basic historical call logs for the customer account.",
 			"extended_description": "",
 			"features": []
 		}
