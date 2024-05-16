@@ -20,7 +20,7 @@ define(function(require) {
 	}));
 
 	var app = {
-		name: 'voip',
+		name: 'calllogs',
 
 		css: [ 'app' ],
 
