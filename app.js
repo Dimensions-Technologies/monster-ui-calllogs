@@ -12,7 +12,7 @@ define(function(require) {
 	}));
 
 	var app = {
-		name: 'calllogs',
+		name: 'dt-calllogs',
 
 		css: [ 'app' ],
 

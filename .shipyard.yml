@@ -1,17 +1,17 @@
 ---
-name: monster-ui-application-calllogs
+name: monster-ui-application-dt-calllogs
 base_branch: origin/4.3
 metapackage:
   - name: meta-monster-ui
-    branch: "4.3"
-    package: monster-ui-application-calllogs
+    branch: master
+    package: monster-ui-application-dt-calllogs
     type: required
 base_core: monster-ui
 template: monster-ui-application.spec.tmpl
 package:
   centos7:
-    name: monster-ui-application-calllogs
-    app_name: calllogs
+    name: monster-ui-application-dt-calllogs
+    app_name: dt-calllogs
     license: "MPL 2.0"
     group: Productivity/Telephony
     url: http://www.2600hz.org/
