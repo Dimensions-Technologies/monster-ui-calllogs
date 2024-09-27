@@ -51,6 +51,12 @@
 	
 	</div>
 
+	<div id="spinner">
+		<div class="monster-loading-view spinner">
+			<i class="icon-telicon-loading-circle monster-loading-spinner"></i>
+		</div>
+	</div>
+
 	<div class="call-logs-content">
 
 		<!-- this has been moved up so the title bar remains -->
@@ -87,16 +93,18 @@
 		</div>
 
 		<div class="call-logs-grid">
-			<div class="grid-row-group">
-				
+			<div class="grid-row-group">	
 			</div>
 			<div class="grid-row no-match">
 				<div class="grid-cell full-width">{{i18n.callLogs.noSearchMatch}}</div>
 			</div>
+			<div class="grid-row set-date-range">
+				<div class="grid-cell full-width">{{i18n.callLogs.setDateRange}}</div>
+			</div>
 			<div class="grid-row-container">
 			</div>
 			{{#unless cdrs}}
-			<div class="grid-row">
+			<div class="grid-row no-cdrs">
 				<div class="grid-cell full-width">{{i18n.table.empty}}</div>
 			</div>
 			{{/unless}}

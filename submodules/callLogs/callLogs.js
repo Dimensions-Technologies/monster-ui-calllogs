@@ -46,6 +46,7 @@ define(function(require) {
 			var self = this,
 				template,
 				defaultDateRange = 1,
+				container = parent || $('.right-content'),
 				maxDateRange = 31;
 
 			if (!toDate && !fromDate) {
@@ -63,57 +64,149 @@ define(function(require) {
 				showReport: monster.config.whitelabel.callReportEmail ? true : false
 			};
 
-			self.callLogsGetCdrs(fromDate, toDate, function(cdrs, nextStartKey) {
+			// Create and show the initial template with spinner
+			template = $(self.getTemplate({
+				name: 'layout',
+				data: dataTemplate,
+				submodule: 'callLogs'
+			}));
+			container.empty().append(template);
+
+			// show loading spinner and disable all buttons in the btn-group when data is loading
+			template.find('#spinner').show();
+			template.find('.btn-group .btn').prop('disabled', true);
+
+			template.find('.fixed-ranges-date').hide();
+			template.find('.download-csv').prop('disabled', true);
+			template.find('.search-div .search-query').attr('disabled', true);
+
+			template.find('.call-logs-content').hide();
+			template.find('.call-logs-loader').hide();
+
+			// set date range and disable date range fields when loading custom data
+			if (type == 'custom') {
+				template.find('#startDate').val(monster.util.toFriendlyDate(fromDate, 'date'));
+				template.find('#startDate').attr('disabled', true);
+				template.find('#endDate').val(monster.util.toFriendlyDate(toDate, 'date'));
+				template.find('#endDate').attr('disabled', true);
+				template.find('.apply-filter').attr('disabled', true);
+			}
+
+			// fetch the data
+			self.callLogsGetCdrs(fromDate, toDate, function(cdrs, nextStartKey, errorCode) {
 				cdrs = self.callLogsFormatCdrs(cdrs);
 
-				dataTemplate.cdrs = cdrs;
-				template = $(self.getTemplate({
-					name: 'layout',
-					data: dataTemplate,
-					submodule: 'callLogs'
-				}));
-				monster.ui.tooltips(template);
+				type = type || 'today';
 
-				if (cdrs && cdrs.length) {
-					var cdrsTemplate = $(self.getTemplate({
-						name: 'cdrsList',
-						data: {
-							cdrs: cdrs,
-							showReport: monster.config.whitelabel.callReportEmail ? true : false
-						},
+				if (errorCode == '500') {
+
+					dataTemplate.cdrs = [];
+					dataTemplate.type = type || 'today';
+					template = $(self.getTemplate({
+						name: 'layout',
+						data: dataTemplate,
 						submodule: 'callLogs'
 					}));
-					template.find('.call-logs-grid .grid-row-container')
-							.append(cdrsTemplate);
-				}
 
-				var optionsDatePicker = {
-					container: template,
-					range: maxDateRange
-				};
+					var optionsDatePicker = {
+						container: template,
+						range: maxDateRange
+					};
 
-				monster.ui.initRangeDatepicker(optionsDatePicker);
+					monster.ui.initRangeDatepicker(optionsDatePicker);
 
-				template.find('#startDate').datepicker('setDate', fromDate);
-				template.find('#endDate').datepicker('setDate', toDate);
+					template.find('#startDate').datepicker('setDate', fromDate);
+					template.find('#endDate').datepicker('setDate', toDate);
 
-				if (!nextStartKey) {
+					template.find('#spinner').hide();
+					template.find('.call-logs-grid .grid-row .grid-cell').text(self.i18n.active().callLogs.outOfRange);
 					template.find('.call-logs-loader').hide();
+
+					self.callLogsBindEvents({
+						template: template,
+						fromDate: fromDate,
+						toDate: toDate
+					});
+
+					monster.ui.tooltips(template);
+
+					container.empty().append(template);
+
+					template.find('.grid-row.set-date-range').hide();
+					template.find('.download-csv').prop('disabled', true);
+					template.find('.search-div .search-query').attr('disabled', true);
+
+				} else {
+					// update dataTemplate with the retrieved data and ensure type is correct
+					dataTemplate.cdrs = cdrs;
+					dataTemplate.type = type || 'today';
+
+					// update the template with data
+					template = $(self.getTemplate({
+						name: 'layout',
+						data: dataTemplate,
+						submodule: 'callLogs'
+					}));
+
+					monster.ui.tooltips(template);
+
+					if (cdrs && cdrs.length) {
+						var cdrsTemplate = $(self.getTemplate({
+							name: 'cdrsList',
+							data: {
+								cdrs: cdrs,
+								showReport: monster.config.whitelabel.callReportEmail ? true : false
+							},
+							submodule: 'callLogs'
+						}));
+						template.find('.call-logs-grid .grid-row-container')
+								.append(cdrsTemplate);
+					}
+
+					var optionsDatePicker = {
+						container: template,
+						range: maxDateRange
+					};
+
+					monster.ui.initRangeDatepicker(optionsDatePicker);
+
+					template.find('#startDate').datepicker('setDate', fromDate);
+					template.find('#endDate').datepicker('setDate', toDate);
+
+					if (!nextStartKey) {
+						template.find('.call-logs-loader').hide();
+					}
+
+					// reapply the active tab after rendering
+					template.find('.btn-group .btn').removeClass('active');
+					template.find('.btn[data-type="' + type + '"]').addClass('active');
+
+					self.callLogsBindEvents({
+						template: template,
+						cdrs: cdrs,
+						fromDate: fromDate,
+						toDate: toDate,
+						nextStartKey: nextStartKey
+					});
+
+					monster.ui.tooltips(template);
+
+					// hide the spinner and update container with the new template
+					template.find('#spinner').hide();
+					container.empty().append(template);
+
+					// disable search and download if there is no data
+					if (cdrs.length > 0) {
+						template.find('.download-csv').prop('disabled', false);
+						template.find('.search-div .search-query').attr('disabled', false);
+					} else {
+						template.find('.download-csv').prop('disabled', true);
+						template.find('.search-div .search-query').attr('disabled', true);
+					}
+
+					template.find('.grid-row.set-date-range').hide();
+
 				}
-
-				self.callLogsBindEvents({
-					template: template,
-					cdrs: cdrs,
-					fromDate: fromDate,
-					toDate: toDate,
-					nextStartKey: nextStartKey
-				});
-
-				monster.ui.tooltips(template);
-
-				parent
-					.empty()
-					.append(template);
 
 				callback && callback();
 			});
@@ -135,7 +228,10 @@ define(function(require) {
 				var fromDate = template.find('input.filter-from').datepicker('getDate'),
 					toDate = template.find('input.filter-to').datepicker('getDate');
 
-				self.callLogsRenderContent(template.parents('.right-content'), fromDate, toDate, 'custom');
+				// call the method without changing the tab
+				self.callLogsRenderContent(template.parents('.right-content'), fromDate, toDate, 'custom', function() {
+				});
+
 			});
 
 			template.find('.fixed-ranges button').on('click', function(e) {
@@ -146,9 +242,9 @@ define(function(require) {
 				template.find('.fixed-ranges button').removeClass('active');
 				$this.addClass('active');
 
-				if (type !== 'custom') {
+				if (type != 'custom') {
 					// Without this, it doesn't look like we're refreshing the data.
-					// GOod way to solve it would be to separate the filters from the call logs view, and only refresh the call logs.
+					// Good way to solve it would be to separate the filters from the call logs view, and only refresh the call logs.
 					template.find('.call-logs-content').empty();
 
 					var dates = self.callLogsGetFixedDatesFromType(type);
@@ -156,6 +252,16 @@ define(function(require) {
 				} else {
 					template.find('.fixed-ranges-date').hide();
 					template.find('.custom-range').addClass('active');
+					template.find('.search-div .search-query').val('');
+
+					template.find('.grid-row').show();
+					template.find('.grid-row.no-match').hide();
+					template.find('.grid-row.no-cdrs').hide();
+					template.find('.call-logs-grid .grid-row-container').hide();
+
+					template.find('.call-logs-loader').hide();
+					template.find('.download-csv').prop('disabled', true);
+					template.find('.search-div .search-query').attr('disabled', true);
 				}
 			});
 
@@ -345,12 +451,15 @@ define(function(require) {
 					
 					success: function(data, status) {
 						console.log('Getting Call Details Successful');
-						callback(data.data, data.next_start_key);
+						callback(data.data, data.next_start_key, null);
 					},
 					
 					error: function(data, status) {
 						console.log('Getting Call Details Error');
-						if (data.error === "503") {
+						if (data.error === "500") {
+							console.log("500 error occurred, datastore_missing");
+							callback(null, null, '500');
+						} else if (data.error === "503") {
 							console.log("503 error occurred, retrying...");
 							// wait 10 seconds
 							setTimeout(function() {
@@ -475,8 +584,6 @@ define(function(require) {
 		},
 
 		callLogsShowDetailsPopup: function(callLogId) {
-
-			console.log('callLogsShowDetailsPopup');
 
 			var self = this;
 			self.callApi({
