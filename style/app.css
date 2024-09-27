@@ -17,5 +17,11 @@
 }
 
 #spinner {
-	padding-top: 30%;
+	padding-top: 20%;
+}
+
+.monster-loading-spinner {
+    margin: 0 !important;
+    position: fixed !important;
+    left: 50% !important;
 }

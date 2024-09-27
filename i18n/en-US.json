@@ -1077,7 +1077,9 @@
 	"callLogs": {
 		"title": "Call Logs",
 		"dateRangeTo": "to",
-		"noSearchMatch": "You search criteria did not match any Call Log.",
+		"noSearchMatch": "You search criteria did not match any Call Log",
+		"setDateRange": "Set Start and End Date and press Filter",
+		"outOfRange": "There is no CDR data for the requested time period",
 		"detailsPopupTitle": "Call Log Details",
 		"applyFilter": "Filter by selected dates",
 		"resetFilter": "Reset filter to default dates",
