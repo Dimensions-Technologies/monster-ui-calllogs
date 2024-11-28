@@ -71,7 +71,7 @@
 	background-color: #f6f6f6;
 	border-bottom: solid 2px #ddd;
 	border-radius: 2px;
-	max-height: 500px;
+	max-height: 900px;
 	overflow: auto;
 }
 
@@ -255,9 +255,11 @@ body.colorblind #call_logs_container .grid-cell.direction .monster-orange {
 	color: #222 !important;
 }
 
-
-
 /* hide scroll wheel on call logs table */
 .call-logs-grid::-webkit-scrollbar {
 	display: none; /* Hide scrollbar in WebKit browsers */
+}
+
+#call_logs_container .reload-button { 
+	padding-left: 5px;
 }

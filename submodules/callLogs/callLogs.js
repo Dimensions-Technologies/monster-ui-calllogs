@@ -82,6 +82,7 @@ define(function(require) {
 
 			template.find('.fixed-ranges-date').hide();
 			template.find('.download-csv').prop('disabled', true);
+			template.find('.reload-cdrs').prop('disabled', true);
 			template.find('.search-div .search-query').attr('disabled', true);
 
 			template.find('.call-logs-content').hide();
@@ -138,6 +139,7 @@ define(function(require) {
 
 					template.find('.grid-row.set-date-range').hide();
 					template.find('.download-csv').prop('disabled', true);
+					template.find('.reload-cdrs').prop('disabled', true);
 					template.find('.search-div .search-query').attr('disabled', true);
 
 				} else {
@@ -202,9 +204,11 @@ define(function(require) {
 					// disable search and download if there is no data
 					if (cdrs.length > 0) {
 						template.find('.download-csv').prop('disabled', false);
+						template.find('.reload-cdrs').prop('disabled', false);
 						template.find('.search-div .search-query').attr('disabled', false);
 					} else {
 						template.find('.download-csv').prop('disabled', true);
+						template.find('.reload-cdrs').prop('disabled', true);
 						template.find('.search-div .search-query').attr('disabled', true);
 					}
 
@@ -238,7 +242,7 @@ define(function(require) {
 
 			});
 
-			template.find('.fixed-ranges button').on('click', function(e) {
+			template.find('.fixed-ranges .btn-group button').on('click', function(e) {
 				var $this = $(this),
 					type = $this.data('type');
 
@@ -265,6 +269,7 @@ define(function(require) {
 
 					template.find('.call-logs-loader').hide();
 					template.find('.download-csv').prop('disabled', true);
+					template.find('.reload-cdrs').prop('disabled', true);
 					template.find('.search-div .search-query').attr('disabled', true);
 				}
 			});
@@ -275,6 +280,21 @@ define(function(require) {
 					url = self.apiUrl + 'accounts/' + self.accountId + '/cdrs?created_from=' + fromDateTimestamp + '&created_to=' + toDateTimestamp + '&paginate=false&accept=text/csv&auth_token=' + self.getAuthToken();
 
 				window.open(url, '_blank');
+			});
+
+			template.find('.reload-cdrs').on('click', function(e) {
+				var activeButtonType = template.find('.btn-group .btn.active').data('type');
+
+				if (activeButtonType == 'custom') {
+					var fromDate = template.find('input.filter-from').datepicker('getDate'),
+					toDate = template.find('input.filter-to').datepicker('getDate');
+					self.callLogsRenderContent(template.parents('.right-content'), fromDate, toDate, 'custom', function() {
+					});
+				} else {
+					var dates = self.callLogsGetFixedDatesFromType(activeButtonType);
+					self.callLogsRenderContent(template.parents('.right-content'), dates.from, dates.to, activeButtonType);
+				}
+
 			});
 
 			template.find('.search-div input.search-query').on('keyup', function(e) {
@@ -458,7 +478,7 @@ define(function(require) {
 				filters = {
 					'created_from': fromDateTimestamp,
 					'created_to': toDateTimestamp,
-					'page_size': 50
+					'page_size': miscSettings.getRequestPageSize || 50
 				};
 		
 			if (pageStartKey) {
