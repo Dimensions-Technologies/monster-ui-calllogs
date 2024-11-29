@@ -16,7 +16,11 @@
 
 			<div class="search-div pull-right">
 				<span class="search-box">
-					<i class="fa fa-search"></i>
+					{{#if miscSettings.enableGoogleIcons}}
+						<i class="material-symbols-icon-search-small">search</i>
+					{{else}}
+						<i class="fa fa-search"></i>
+					{{/if}}
 					<input type="text" class="search-query" placeholder="{{i18n.table.search}}">
 				</span>	
 			</div>
@@ -29,13 +33,27 @@
 		
 		<div class="reload-button pull-right">
 			<span class="reload-button">
-				<button type="button" class="monster-button monster-button-secondary reload-cdrs"><i class="fa fa-refresh"></i>{{i18n.callLogs.reload}}</button>
+				{{#if miscSettings.enableGoogleIcons}}
+					<button type="button" class="monster-button monster-button-secondary reload-cdrs">
+						<span class="material-symbols-medium">refresh</span>
+						<span class="button-label">{{i18n.callLogs.reload}}</span>
+					</button>
+				{{else}}
+					<button type="button" class="monster-button monster-button-secondary reload-cdrs "><i class="fa fa-refresh"></i>{{i18n.callLogs.reload}}</button>
+				{{/if}}
 			</span>
 		</div>
 
 		<div class="download-button pull-right">
 			<span class="download-button">
-				<button type="button" class="monster-button monster-button-secondary download-csv"><i class="fa fa-download"></i>{{i18n.download}}</button>
+				{{#if miscSettings.enableGoogleIcons}}
+					<button type="button" class="monster-button monster-button-secondary download-csv">
+						<span class="material-symbols-medium">download</span>
+						<span class="button-label">{{i18n.download}}</span>
+					</button>
+				{{else}}
+					<button type="button" class="monster-button monster-button-secondary download-csv"><i class="fa fa-download"></i>{{i18n.download}}</button>
+				{{/if}}
 			</span>
 		</div>
 
@@ -67,14 +85,31 @@
 
 		<!-- this has been moved up so the title bar remains -->
 		<div class="grid-row header-row">
-			<div class="grid-cell direction">
-				<div class="sub-cell cell-top">
-					<i class="fa fa-arrow-right monster-green" title="{{i18n.callLogs.gridHeaders.inboundCall}}"></i>
+			
+			{{#if miscSettings.enableDirectionText}}
+				<div class="grid-cell direction">
+					<div class="sub-cell cell-top">{{i18n.callLogs.gridHeaders.direction1}}</div>
+					<div class="sub-cell cell-bottom">{{i18n.callLogs.gridHeaders.direction2}}</div>
+				</div>	
+			{{else}}
+				<div class="grid-cell direction">
+					<div class="sub-cell cell-top">
+						{{#if miscSettings.enableGoogleIcons}}
+							<span class="material-symbols-interaction-legs-direction" title="{{i18n.callLogs.gridHeaders.inboundCall}}">south_west</span>
+						{{else}}
+							<i class="fa fa-arrow-right monster-green" title="{{i18n.callLogs.gridHeaders.inboundCall}}"></i>
+						{{/if}}
+					</div>
+					<div class="sub-cell cell-bottom">
+						{{#if miscSettings.enableGoogleIcons}}
+							<span class="material-symbols-interaction-legs-direction" title="{{i18n.callLogs.gridHeaders.outboundCall}}">north_east</span>
+						{{else}}
+							<i class="fa fa-arrow-left monster-orange" title="{{i18n.callLogs.gridHeaders.outboundCall}}"></i>
+						{{/if}}
+					</div>
 				</div>
-				<div class="sub-cell cell-bottom">
-					<i class="fa fa-arrow-left monster-orange" title="{{i18n.callLogs.gridHeaders.outboundCall}}"></i>
-				</div>
-			</div>
+			{{/if}}
+
 			<div class="grid-cell datetime">
 				<div class="sub-cell cell-top">{{i18n.callLogs.gridHeaders.dateTime1}}</div>
 				<div class="sub-cell cell-bottom">{{timezone}}</div>

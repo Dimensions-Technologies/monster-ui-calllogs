@@ -1,0 +1,80 @@
+/* google font file */
+@font-face {
+    font-family: 'Material Symbols Outlined';
+    font-style: normal;
+    font-weight: 100 700;
+    src: url(../style/MaterialSymbolsOutlined.woff2) format('woff2');
+}
+
+
+/* cdr header search */
+.search-box .material-symbols-icon-search-small {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    position: absolute;
+    margin: 4px 0 0 6px;
+}
+
+/* medium icon size */
+.material-symbols-medium {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    line-height: 1;
+    margin-right: 5px;
+}
+
+/* cdr interaction leg icons */
+.material-symbols-interaction-legs {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    line-height: 1;
+    margin-right: 5px;
+    vertical-align: -30%;
+}
+
+/* cdr interaction leg icons */
+.material-symbols-interaction-legs-direction {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    line-height: 1;
+    margin-right: 5px;
+    vertical-align: -30%;
+}
+
+/* cdr interaction leg icons */
+.material-symbols-interaction-legs:hover {
+    color: #22a5ff;
+    cursor: pointer;
+}

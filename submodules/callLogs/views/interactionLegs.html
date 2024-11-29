@@ -15,7 +15,11 @@
 			<div class="sub-cell single-cell">{{formatPhoneNumber this.fromNumber}}</div>
 			{{/if}}
 			{{#if formatted.fromDeviceName}}
-				<div class="sub-cell"><i class="{{ formatted.deviceIcon }}" data-placement="top" data-toggle="tooltip" data-original-title="{{ formatted.deviceTooltip }}"></i>{{formatted.fromDeviceName}}</div>
+				{{#if this.hideDeviceIcons}}
+					<div class="sub-cell" data-placement="top" data-toggle="tooltip" data-original-title="{{ formatted.deviceTooltip }}">{{formatted.fromDeviceName}}</div>
+				{{else}}
+					<div class="sub-cell"><i class="{{ formatted.deviceIcon }}" data-placement="top" data-toggle="tooltip" data-original-title="{{ formatted.deviceTooltip }}"></i>{{formatted.fromDeviceName}}</div>
+				{{/if}}
 			{{/if}}
 		</div>
 		<div class="grid-cell to{{#if formatted.toDeviceName}} high-cell{{/if}}">
@@ -26,7 +30,11 @@
 			<div class="sub-cell single-cell">{{formatPhoneNumber this.toNumber}}</div>
 			{{/if}}
 			{{#if formatted.toDeviceName}}
-				<div class="sub-cell"><i class="{{ formatted.deviceIcon }}" data-placement="top" data-toggle="tooltip" data-original-title="{{ formatted.deviceTooltip }}"></i>{{formatted.toDeviceName}}</div>
+				{{#if this.hideDeviceIcons}}
+					<div class="sub-cell" data-placement="top" data-toggle="tooltip" data-original-title="{{ formatted.deviceTooltip }}">{{formatted.toDeviceName}}</div>
+				{{else}}
+					<div class="sub-cell"><i class="{{ formatted.deviceIcon }}" data-placement="top" data-toggle="tooltip" data-original-title="{{ formatted.deviceTooltip }}"></i>{{formatted.toDeviceName}}</div>
+				{{/if}}
 			{{/if}}
 		</div>
 		<div class="grid-cell duration">
@@ -41,10 +49,19 @@
 		</div>
 		<div class="grid-cell actions">
 			<div class="sub-cell single-cell">
-				<i class="fa fa-cog fa-lg details-cdr" data-toggle="tooltip" data-placement="top" data-original-title="{{ @root.i18n.callLogs.actions.details }}"></i>
+				{{#if this.enableGoogleIcons}}
+					<span class="material-symbols-interaction-legs details-cdr" data-toggle="tooltip" data-placement="top" data-original-title="{{ @root.i18n.callLogs.actions.details }}">info</span>
+				{{else}}
+					<i class="fa fa-cog fa-lg details-cdr" data-toggle="tooltip" data-placement="top" data-original-title="{{ @root.i18n.callLogs.actions.details }}"></i>
+				{{/if}}
+				
 				{{#if this.enableNetworkTraceDownload}}
 					{{#if this.showPcapDownload}}
-						<i class="fa fa-download fa-lg download-pcap" data-toggle="tooltip" data-placement="top" data-original-title="{{ @root.i18n.callLogs.actions.download }}"></i>
+						{{#if this.enableGoogleIcons}}
+							<span class="material-symbols-interaction-legs download-pcap" data-toggle="tooltip" data-placement="top" data-original-title="{{ @root.i18n.callLogs.actions.download }}">download</span>
+						{{else}}
+							<i class="fa fa-download fa-lg download-pcap" data-toggle="tooltip" data-placement="top" data-original-title="{{ @root.i18n.callLogs.actions.download }}"></i>
+						{{/if}}
 					{{/if}}
 				{{/if}}
 			</div>

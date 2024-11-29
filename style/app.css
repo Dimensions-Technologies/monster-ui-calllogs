@@ -1,5 +1,6 @@
 @import '../../../css/partials/base';
 @import url('../submodules/callLogs/callLogs.css');
+@import url('../style/fonts.css');
 
 .right-content {
 	margin: 0 auto !important; /* Center align */

@@ -1094,7 +1094,9 @@
 			"hangup1": "Hangup",
 			"hangup2": "Cause",
 			"details1": "Call",
-			"actions": "Actions"
+			"actions": "Actions",
+			"direction1": "Call",
+			"direction2": "Direction"
 		},
 		"reportCall": "Report Call",
 		"loaderMessage": "Click here to load additional Call Logs.",
@@ -1116,7 +1118,7 @@
 		"__version": "v4.0",
 		"loading": "Loading additional information...",
 		"actions": {
-			"report": "Copy details",
+			"report": "Copy Details",
 			"details": "Technical Details",
 			"download": "Download PCAP",
 			"downloadRequested": "PCAP file request submitted for the selected call",
@@ -1124,7 +1126,9 @@
 			"downloadError": "Unable to download the PCAP file for the selected call"
 		},
 		"downloadTooltip": "In \"Custom\" Mode, you'll need to click on \"Filter\" before clicking on download.",
-		"reload": "Refresh"
+		"reload": "Refresh",
+		"outbound": "Outbound",
+		"inbound": "Inbound"
 	},
 
 	"myOffice": {
