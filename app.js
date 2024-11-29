@@ -2,7 +2,8 @@ define(function(require) {
 	var $ = require('jquery'),
 		_ = require('lodash'),
 		monster = require('monster'),
-		miscSettings = {};
+		miscSettings = {},
+		requestSettings = {};
 
 	var appSubmodules = [
 		'callLogs'
@@ -63,12 +64,17 @@ define(function(require) {
 									miscSettings = data.dimension.dt_calllogs.miscSettings;
 								}
 							}
+
+							if (data.dimension.dt_calllogs.hasOwnProperty('requestSettings')) {
+								requestSettings = data.dimension.dt_calllogs.requestSettings;
+							}
 							
 						}
 
 						// log to console if enabled
 						if (miscSettings.enableConsoleLogging) {
 							console.log('miscSettings:', miscSettings);
+							console.log('requestSettings:', requestSettings);
 						}
 
 						callback()
@@ -78,7 +84,7 @@ define(function(require) {
 				},
 
 				function() {
-					monster.pub('callLogs.render', { miscSettings });
+					monster.pub('callLogs.render', { miscSettings , requestSettings });
 					parent
 						.empty()
 						.append(template);

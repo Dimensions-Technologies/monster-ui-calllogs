@@ -3,7 +3,8 @@ define(function(require) {
 		_ = require('lodash'),
 		monster = require('monster'),
 		moment = require('moment'),
-		miscSettings = {};
+		miscSettings = {},
+		requestSettings = {};
 
 	var app = {
 		requests: {},
@@ -23,6 +24,7 @@ define(function(require) {
 
 			// set variables for use elsewhere
 			miscSettings = args.miscSettings;
+			requestSettings = args.requestSettings;
 
 			self.callLogsGetData(function() {
 				self.callLogsRenderContent(args.parent, args.fromDate, args.toDate, args.type, args.callback);
@@ -800,7 +802,16 @@ define(function(require) {
 					var callId = data.data.call_id,
 						timestamp = monster.util.gregorianToDate(data.data.timestamp);
 
-					self.downloadNetworkTrace(callId, timestamp);
+					self.computeHash(callId, function(callIdHash) {
+
+						if (miscSettings.enableConsoleLogging) {
+							console.log('callIdHash', callIdHash);
+						}
+						
+						self.downloadNetworkTrace(callId, timestamp, callIdHash);
+
+					});
+
 				},
 				error: function(data, status) {
 					monster.ui.alert('error', self.i18n.active().callLogs.alertMessages.getDetailsError);
@@ -808,10 +819,10 @@ define(function(require) {
 			});
 		},
 		
-		downloadNetworkTrace: function(callId, timestamp) {
+		downloadNetworkTrace: function(callId, timestamp, callIdHash) {
 			var self = this, 
-				apiRoot = monster.config.whitelabel.dimension?.dt_calllogs?.requestSettings?.getNetworkTrace?.apiRoot,
-				url = monster.config.whitelabel.dimension?.dt_calllogs?.requestSettings?.getNetworkTrace?.url,
+				apiRoot = requestSettings.getNetworkTrace.apiRoot,
+				url = requestSettings.getNetworkTrace.url,
 				endpointUrl = apiRoot + url;
 
 			monster.ui.toast({
@@ -829,7 +840,7 @@ define(function(require) {
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ call_id: callId, timestamp: timestamp })
+				body: JSON.stringify({ call_id: callId, timestamp: timestamp, checksum: callIdHash })
 			})
 			.then(response => {
 				if (!response.ok) {
@@ -885,7 +896,30 @@ define(function(require) {
 					callback && callback(data.data);
 				}
 			});
+		},
+
+		computeHash: function(callId, callback) {
+
+			var key = requestSettings.getNetworkTrace.requestKey,
+				encoder = new TextEncoder(),
+				data = encoder.encode(callId + key);
+		
+			crypto.subtle.digest("SHA-256", data)
+				.then(function(buffer) {
+					var hashedBytes = new Uint8Array(buffer);
+					var hexString = Array.from(hashedBytes)
+						.map(function(b) { return b.toString(16).padStart(2, '0').toUpperCase(); })
+						.join('');
+					
+					callback && callback(hexString);
+				})
+				.catch(function(error) {
+					console.error("Error Computing Hash:", error);
+					callback && callback("");
+				});
+
 		}
+
 	};
 
 	return app;
