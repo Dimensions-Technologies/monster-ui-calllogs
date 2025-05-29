@@ -165,7 +165,9 @@ define(function(require) {
 			container.empty().append(template);
 			
 			// show loading spinner and disable all buttons in the btn-group when data is loading
-			template.find('#spinner').show();
+			if(!miscSettings.hideLoadingSpinner) {
+				template.find('#spinner').show();
+			}
 			template.find('.btn-group .btn').prop('disabled', true);
 
 			template.find('.fixed-ranges-date').hide();

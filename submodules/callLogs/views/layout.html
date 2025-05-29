@@ -75,11 +75,13 @@
 	
 	</div>
 
-	<div id="spinner">
-		<div class="monster-loading-view spinner">
-			<i class="icon-telicon-loading-circle monster-loading-spinner"></i>
+	{{#unless miscSettings.hideLoadingSpinner}}
+		<div id="spinner">
+			<div class="monster-loading-view spinner">
+				<i class="icon-telicon-loading-circle monster-loading-spinner"></i>
+			</div>
 		</div>
-	</div>
+	{{/unless}}
 
 	<div class="call-logs-content">
 
@@ -154,7 +156,12 @@
 
 	<div class="call-logs-loader">
 		<div class="loader-message">{{i18n.callLogs.loaderMessage}}</div>
-		<div class="loading-message"><i class="fa fa-spinner fa-lg"></i><span>{{i18n.callLogs.loadingMessage}}</span></div>
+		<div class="loading-message">
+			{{#unless miscSettings.hideLoadingSpinner}}
+				<i class="fa fa-spinner fa-lg"></i>
+			{{/unless}}
+			<span>{{i18n.callLogs.loadingMessage}}</span>
+		</div>
 	</div>
 
 	<!-- DOM element to which clipboard click events can be anchored without interfeering with the toggle main-leg logic -->
