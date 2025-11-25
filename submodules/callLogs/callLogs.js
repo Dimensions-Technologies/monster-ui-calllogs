@@ -136,11 +136,37 @@ define(function(require) {
 				defaultDateRange = 1,
 				container = parent || $('.right-content'),
 				maxDateRange = 31;
+
+			// format a time (hours, minutes) according to user setting (12h/24h)
+			function formatTimeByUserSetting(hours, minutes) {
+				var is12hMode = _.get(monster, 'apps.auth.currentUser.ui_flags.twelve_hours_mode', false),
+					suffix = '',
+					displayHours = hours;
+
+				if (is12hMode) {
+					suffix = hours >= 12 ? ' PM' : ' AM';
+					displayHours = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
+				}
+
+				// 24h: 00–23 with leading zero
+				var hoursStr = displayHours < 10 ? '0' + displayHours : displayHours.toString();
+				var minutesStr = minutes < 10 ? '0' + minutes : minutes.toString();
+
+				// for 12h mode, timepicker uses `g:i A` (no leading zero on hour)
+				if (is12hMode) {
+					hoursStr = displayHours.toString();
+				}
+
+				return hoursStr + ':' + minutesStr + (is12hMode ? suffix : '');
+			}
 		
 			if (!toDate && !fromDate) {
 				var dates = monster.util.getDefaultRangeDates(defaultDateRange);
 				fromDate = dates.from;
 				toDate = dates.to;
+
+				fromDate.setHours(0, 0, 0, 0);
+    			toDate.setHours(23, 59, 59, 999);
 			}
 		
 			var tz = monster.util.getCurrentTimeZone(),
@@ -180,13 +206,21 @@ define(function(require) {
 
 			// set date range and disable date range fields when loading custom data
 			if (type == 'custom') {
-				template.find('#startDate').val(monster.util.toFriendlyDate(fromDate, 'date'));
-				template.find('#startDate').attr('disabled', true);
-				template.find('#endDate').val(monster.util.toFriendlyDate(toDate, 'date'));
-				template.find('#endDate').attr('disabled', true);
+				template.find('#startDate')
+					.val(monster.util.toFriendlyDate(fromDate, 'date'))
+					.attr('disabled', true);
+				template.find('#endDate')
+					.val(monster.util.toFriendlyDate(toDate, 'date'))
+					.attr('disabled', true);
+				template.find('#startTime')
+                    .val(formatTimeByUserSetting(0, 0)) // 00:00 or 12:00AM
+                    .attr('disabled', true);
+                template.find('#endTime') 
+                    .val(formatTimeByUserSetting(23, 59)) // 23:59 or 11:59PM
+                    .attr('disabled', true);
 				template.find('.apply-filter').attr('disabled', true);
 			}
-					
+		
 			// fetch the data
 			self.callLogsGetCdrs(fromDate, toDate, function(cdrs, nextStartKey, errorCode) {
 				cdrs = self.callLogsFormatCdrs(cdrs);
@@ -215,6 +249,26 @@ define(function(require) {
 
 					template.find('#startDate').datepicker('setDate', fromDate);
 					template.find('#endDate').datepicker('setDate', toDate);
+
+					self.timepicker(template.find('#startTime'), {
+						step: 5,
+					});
+					self.timepicker(template.find('#endTime'), {
+						step: 5
+					});
+
+					if (type === 'custom') {
+						template.find('#startTime').val(
+							formatTimeByUserSetting(fromDate.getHours(), fromDate.getMinutes())
+						);
+						template.find('#endTime').val(
+							formatTimeByUserSetting(toDate.getHours(), toDate.getMinutes())
+						);
+					} else {
+						// default full-day range
+						template.find('#startTime').val(formatTimeByUserSetting(0, 0)); // 00:00 / 12:00 AM
+						template.find('#endTime').val(formatTimeByUserSetting(23, 59)); // 23:59 / 11:59 PM
+					}
 
 					template.find('#spinner').hide();
 					template.find('.call-logs-grid .grid-row .grid-cell').text(self.i18n.active().callLogs.outOfRange);
@@ -276,7 +330,27 @@ define(function(require) {
 		
 					template.find('#startDate').datepicker('setDate', fromDate);
 					template.find('#endDate').datepicker('setDate', toDate);
-		
+
+					self.timepicker(template.find('#startTime'), {
+						step: 5
+					});
+					self.timepicker(template.find('#endTime'), {
+						step: 5
+					});
+
+					if (type === 'custom') {
+						template.find('#startTime').val(
+							formatTimeByUserSetting(fromDate.getHours(), fromDate.getMinutes())
+						);
+						template.find('#endTime').val(
+							formatTimeByUserSetting(toDate.getHours(), toDate.getMinutes())
+						);
+					} else {
+						// default full-day range
+						template.find('#startTime').val(formatTimeByUserSetting(0, 0)); // 00:00 / 12:00 AM
+						template.find('#endTime').val(formatTimeByUserSetting(23, 59)); // 23:59 / 11:59 PM
+					}
+					
 					if (!nextStartKey) {
 						template.find('.call-logs-loader').hide();
 					}
@@ -332,13 +406,15 @@ define(function(require) {
 			});
 
 			template.find('.apply-filter').on('click', function(e) {
-				var fromDate = template.find('input.filter-from').datepicker('getDate'),
-					toDate = template.find('input.filter-to').datepicker('getDate');
+				var range = getDateTimeFromInputs(template);
 
-				// call the method without changing the tab
-				self.callLogsRenderContent(template.parents('.right-content'), fromDate, toDate, 'custom', function() {
-				});
-				
+				self.callLogsRenderContent(
+					template.parents('.right-content'),
+					range.from,
+					range.to,
+					'custom',
+					function() {}
+				);
 			});
 
 			template.find('.fixed-ranges .btn-group button').on('click', function(e) {
@@ -373,6 +449,7 @@ define(function(require) {
 				}
 			});
 
+			/*
 			template.find('.download-csv').on('click', function(e) {
 				var fromDateTimestamp = monster.util.dateToBeginningOfGregorianDay(fromDate),
 					toDateTimestamp = monster.util.dateToEndOfGregorianDay(toDate),
@@ -380,15 +457,95 @@ define(function(require) {
 
 				window.open(url, '_blank');
 			});
+			*/
+
+			template.find('.download-csv').on('click', function(e) {
+				var range  = getDateTimeFromInputs(template),
+					from   = range.from,
+					to     = range.to;
+
+				if (!from || !to) {
+					return;
+				}
+
+				var fromDateTimestamp = monster.util.dateToGregorian(from),
+					toDateTimestamp   = monster.util.dateToGregorian(to),
+					url = self.apiUrl + 'accounts/' + self.accountId + '/cdrs?created_from=' + fromDateTimestamp + '&created_to=' + toDateTimestamp + '&paginate=false&accept=text/csv&auth_token=' + self.getAuthToken();
+
+				// filename formatting
+				var userFormat = _.get(monster, 'apps.auth.currentUser.ui_flags.date_format', 'mdy');
+
+				function zeroPad(num) {
+					num = num.toString();
+					return num.length < 2 ? '0' + num : num;
+				}
+
+				function formatDateForFilename(d) {
+					var yyyy = d.getFullYear().toString(),
+						mm   = zeroPad(d.getMonth() + 1),
+						dd   = zeroPad(d.getDate());
+
+					if (userFormat === 'dmy') {
+						// DD-MM-YYYY
+						return dd + '-' + mm + '-' + yyyy;
+					} else if (userFormat === 'ymd') {
+						// YYYY-MM-DD
+						return yyyy + '-' + mm + '-' + dd;
+					}
+					// default 'mdy' -> MM-DD-YYYY
+					return mm + '-' + dd + '-' + yyyy;
+				}
+
+				function formatTimeForFilename(d) {
+					// 24h, HHmm, safe for filenames (no colon)
+					var hh = zeroPad(d.getHours()),
+						min = zeroPad(d.getMinutes());
+					return hh + min;
+				}
+
+				var filename =
+					'call_logs_' +
+					formatDateForFilename(from) + '_T' + formatTimeForFilename(from) +
+					'_to_' +
+					formatDateForFilename(to) + '_T' + formatTimeForFilename(to) +
+					'.csv';
+
+				// fetch + blob download
+				fetch(url, { method: 'GET' })
+					.then(function(response) {
+						if (!response.ok) {
+							throw new Error('CSV download failed');
+						}
+						return response.blob();
+					})
+					.then(function(blob) {
+						var csvUrl = URL.createObjectURL(blob),
+							a     = document.createElement('a');
+
+						a.href = csvUrl;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+						a.remove();
+						URL.revokeObjectURL(csvUrl);
+					})
+					.catch(function() {
+						monster.ui.alert('error', 'Unable to download CSV');
+					});
+			});
 
 			template.find('.reload-cdrs').on('click', function(e) {
 				var activeButtonType = template.find('.btn-group .btn.active').data('type');
 
 				if (activeButtonType == 'custom') {
-					var fromDate = template.find('input.filter-from').datepicker('getDate'),
-					toDate = template.find('input.filter-to').datepicker('getDate');
-					self.callLogsRenderContent(template.parents('.right-content'), fromDate, toDate, 'custom', function() {
-					});
+					var range = getDateTimeFromInputs(template);
+					self.callLogsRenderContent(
+						template.parents('.right-content'),
+						range.from,
+						range.to,
+						'custom',
+						function() {}
+					);
 				} else {
 					var dates = self.callLogsGetFixedDatesFromType(activeButtonType);
 					self.callLogsRenderContent(template.parents('.right-content'), dates.from, dates.to, activeButtonType);
@@ -515,6 +672,113 @@ define(function(require) {
 				e.stopPropagation();
 			});
 
+			function getDateTimeFromInputs(template) {
+				var fromDate = template.find('input.filter-from').datepicker('getDate'),
+					toDate   = template.find('input.filter-to').datepicker('getDate'),
+					fromTime = template.find('input.filter-from-time').val(),
+					toTime   = template.find('input.filter-to-time').val();
+
+				function parseTimeString(timeString) {
+					if (!timeString) { return null; }
+
+					var trimmed = $.trim(timeString),
+						match   = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+
+					if (!match) {
+						return null;
+					}
+
+					var hours  = parseInt(match[1], 10),
+						minutes = parseInt(match[2], 10),
+						suffix  = match[3] ? match[3].toUpperCase() : null;
+
+					if (suffix === 'AM') {
+						if (hours === 12) {
+							hours = 0;
+						}
+					} else if (suffix === 'PM') {
+						if (hours < 12) {
+							hours += 12;
+						}
+					}
+
+					if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+						return null;
+					}
+
+					return {
+						hours: hours,
+						minutes: minutes
+					};
+				}
+
+				// Start date/time
+				if (fromDate) {
+					var parsedFrom = parseTimeString(fromTime);
+
+					if (parsedFrom) {
+						fromDate.setHours(parsedFrom.hours, parsedFrom.minutes, 0, 0);
+					} else {
+						// default to start of day
+						fromDate.setHours(0, 0, 0, 0);
+					}
+				}
+
+				// End date/time
+				if (toDate) {
+					var parsedTo = parseTimeString(toTime);
+
+					if (parsedTo) {
+						toDate.setHours(parsedTo.hours, parsedTo.minutes, 59, 999);
+					} else {
+						// default to end of day
+						toDate.setHours(23, 59, 59, 999);
+					}
+				}
+
+				return {
+					from: fromDate,
+					to: toDate
+				};
+			}
+
+			// validate date range inputs and disable buttons as needed
+			template
+				template.find('#startDate, #endDate, #startTime, #endTime')
+				.on('change keyup', function() {
+					validateRangeAndToggleFilter();
+				});
+			
+			template
+				.find('#startDate, #endDate')
+				.datepicker('option', 'onSelect', function() {
+					validateRangeAndToggleFilter();
+				});
+
+
+			validateRangeAndToggleFilter();
+
+			function validateRangeAndToggleFilter() {
+				var range    = getDateTimeFromInputs(template),
+					$filter  = template.find('.apply-filter'),
+					$download = template.find('.download-csv'),
+					$reload   = template.find('.reload-cdrs');
+
+				if (!range.from || !range.to) {
+					$filter.prop('disabled', true);
+					$download.prop('disabled', true);
+					$reload.prop('disabled', true);
+					return;
+				}
+
+				// INVALID if end is before start
+				var invalid = range.to < range.from;
+
+				$filter.prop('disabled', invalid);
+				$download.prop('disabled', invalid);
+				$reload.prop('disabled', invalid);
+			}
+
 			function loadMoreCdrs() {
 				var loaderDiv = template.find('.call-logs-loader'),
 					cdrsTemplate;
@@ -589,6 +853,10 @@ define(function(require) {
 				from.setDate(1);
 			}
 
+			// normalise to full days
+			from.setHours(0, 0, 0, 0);
+    		to.setHours(23, 59, 59, 999);
+
 			return {
 				from: from,
 				to: to
@@ -596,6 +864,7 @@ define(function(require) {
 		},
 
 		callLogsGetCdrs: function(fromDate, toDate, callback, pageStartKey, retryCount = 3) {
+			/*
 			var self = this,
 				fromDateTimestamp = monster.util.dateToBeginningOfGregorianDay(fromDate),
 				toDateTimestamp = monster.util.dateToEndOfGregorianDay(toDate),
@@ -604,7 +873,17 @@ define(function(require) {
 					'created_to': toDateTimestamp,
 					'page_size': miscSettings.getRequestPageSize || 50
 				};
-		
+			*/
+
+			var self = this,
+				fromDateTimestamp = monster.util.dateToGregorian(fromDate),
+				toDateTimestamp   = monster.util.dateToGregorian(toDate),
+				filters = {
+					'created_from': fromDateTimestamp,
+					'created_to': toDateTimestamp,
+					'page_size': miscSettings.getRequestPageSize || 50
+				};
+
 			if (pageStartKey) {
 				filters.start_key = pageStartKey;
 			}
@@ -920,6 +1199,19 @@ define(function(require) {
 					callback && callback("");
 				});
 
+		},
+
+		// local timepicker function that formats 24hr as 00:00 opposed to 0:00
+		timepicker: function(target, pOptions) {
+			var self = this,
+				is12hMode = _.get(monster, 'apps.auth.currentUser.ui_flags.twelve_hours_mode', false),
+				defaultOptions = {
+					timeFormat: is12hMode ? 'g:i A' : 'H:i',
+					lang: monster.apps.core.i18n.active().timepicker
+				},
+				options = $.extend(true, {}, defaultOptions, pOptions);
+
+			return target.timepicker(options);
 		}
 
 	};
