@@ -124,7 +124,7 @@ define(function(require) {
 					});
 				}
 
-				var clipboardTarget = $('#call_logs_container .copy-diag-data-target');
+				var clipboardTarget = $('#calls_grid .copy-diag-data-target');
 				clipboardTarget.data('callData', callData);
 				clipboardTarget.trigger('click');
 			});
@@ -134,7 +134,7 @@ define(function(require) {
 			var self = this,
 				template,
 				defaultDateRange = 1,
-				container = parent || $('.right-content'),
+				container = parent || $('.table-wrapper'),
 				maxDateRange = 31;
 
 			// format a time (hours, minutes) according to user setting (12h/24h)
@@ -175,7 +175,7 @@ define(function(require) {
 					type: type || 'today',
 					fromDate: fromDate,
 					toDate: toDate,
-					showFilteredDates: ['thisMonth', 'thisWeek'].indexOf(type) >= 0,
+					showFilteredDates: ['today', 'thisMonth', 'thisWeek'].indexOf(type || 'today') >= 0,
 					showReport: monster.config.whitelabel.callReportEmail ? true : false
 				};
 		
@@ -189,13 +189,20 @@ define(function(require) {
 				submodule: 'callLogs'
 			}));
 			container.empty().append(template);
+
+			template.find('.loading-indicator').removeClass('active');
 			
 			// show loading spinner and disable all buttons in the btn-group when data is loading
-			if(!miscSettings.hideLoadingSpinner) {
+			if (!miscSettings.hideLoadingSpinner) {
 				template.find('#spinner').show();
 			}
-			template.find('.btn-group .btn').prop('disabled', true);
 
+			// show loading dots and disable all buttons in the btn-group when data is loading
+			if (miscSettings.showLoadingDots) {
+				template.find('.loading-indicator').addClass('active');
+			}
+
+			template.find('.btn-group .btn').prop('disabled', true);
 			template.find('.fixed-ranges-date').hide();
 			template.find('.download-csv').prop('disabled', true);
 			template.find('.reload-cdrs').prop('disabled', true);
@@ -271,6 +278,7 @@ define(function(require) {
 					}
 
 					template.find('#spinner').hide();
+					template.find('.loading-indicator').removeClass('active');
 					template.find('.call-logs-grid .grid-row .grid-cell').text(self.i18n.active().callLogs.outOfRange);
 					template.find('.call-logs-loader').hide();
 
@@ -303,7 +311,7 @@ define(function(require) {
 						},
 						submodule: 'callLogs'
 					}));
-		
+
 					monster.ui.tooltips(template);
 		
 					if (cdrs && cdrs.length) {
@@ -371,6 +379,7 @@ define(function(require) {
 		
 					// hide the spinner and update container with the new template
 					template.find('#spinner').hide();
+					template.find('.loading-indicator').removeClass('active');
 					container.empty().append(template);
 
 					// disable search and download if there is no data
@@ -409,7 +418,7 @@ define(function(require) {
 				var range = getDateTimeFromInputs(template);
 
 				self.callLogsRenderContent(
-					template.parents('.right-content'),
+					template.parents('.table-wrapper'),
 					range.from,
 					range.to,
 					'custom',
@@ -431,7 +440,7 @@ define(function(require) {
 					template.find('.call-logs-content').empty();
 
 					var dates = self.callLogsGetFixedDatesFromType(type);
-					self.callLogsRenderContent(template.parents('.right-content'), dates.from, dates.to, type);
+					self.callLogsRenderContent(template.parents('.table-wrapper'), dates.from, dates.to, type);
 				} else {
 					template.find('.fixed-ranges-date').hide();
 					template.find('.custom-range').addClass('active');
@@ -540,7 +549,7 @@ define(function(require) {
 				if (activeButtonType == 'custom') {
 					var range = getDateTimeFromInputs(template);
 					self.callLogsRenderContent(
-						template.parents('.right-content'),
+						template.parents('.table-wrapper'),
 						range.from,
 						range.to,
 						'custom',
@@ -548,7 +557,7 @@ define(function(require) {
 					);
 				} else {
 					var dates = self.callLogsGetFixedDatesFromType(activeButtonType);
-					self.callLogsRenderContent(template.parents('.right-content'), dates.from, dates.to, activeButtonType);
+					self.callLogsRenderContent(template.parents('.table-wrapper'), dates.from, dates.to, activeButtonType);
 				}
 
 			});
@@ -771,8 +780,18 @@ define(function(require) {
 					return;
 				}
 
-				// INVALID if end is before start
-				var invalid = range.to < range.from;
+				var invalid = false;
+
+				if (range.to <= range.from) {
+					invalid = true;
+				} else {
+					var maxEnd = new Date(range.from.getTime());
+					maxEnd.setMonth(maxEnd.getMonth() + 1);
+
+					if (range.to > maxEnd) {
+						invalid = true;
+					}
+				}
 
 				$filter.prop('disabled', invalid);
 				$download.prop('disabled', invalid);

@@ -1,19 +1,48 @@
-<div id="call_logs_container">
-	<div class="call-logs-header">
-		<div class="title-div">
-			{{i18n.callLogs.title}}
+<div id="calls_grid">
+	<div class="fixed-ranges">
+		<div class="btn-toolbar pull-left">
+			<div class="btn-group">
+				<button data-type="today" class="btn{{#compare type "===" "today"}} active{{/compare}}" type="button">{{ i18n.callLogs.thisDay }}</button>
+				<button data-type="thisWeek" class="btn{{#compare type "===" "thisWeek"}} active{{/compare}}" type="button">{{ i18n.callLogs.thisWeek }}</button>
+				<button data-type="thisMonth" class="btn{{#compare type "===" "thisMonth"}} active{{/compare}}" type="button">{{ i18n.callLogs.thisMonth }}</button>
+				<button data-type="custom" class="btn{{#compare type "===" "custom"}} active{{/compare}}" type="button">{{ i18n.callLogs.custom }}</button>
+			</div>
+		</div>
+	</div>
+	
+	<div class="sub-ranges">
+		<div class="custom-range{{#compare type "===" "custom"}} active{{/compare}}">
+			<span>{{i18n.startDate}}</span>
+			<input id="startDate" type="text" class="date-filter filter-from">
+			<input id="startTime" type="text" class="time-filter filter-from-time">
+			<span>{{i18n.endDate}}</span>
+			<input id="endDate" type="text" class="date-filter filter-to">
+			<input id="endTime" type="text" class="time-filter filter-to-time">
+			<button type="button" class="apply-filter monster-button monster-button-primary" title="{{i18n.callLogs.applyFilter}}">{{i18n.filter}}</button>
 		</div>
 
-		<div class="fixed-ranges">
-			<div class="btn-toolbar pull-left">
-				<div class="btn-group">
-					<button data-type="today" class="btn{{#compare type "===" "today"}} active{{/compare}}" type="button">{{ i18n.callLogs.thisDay }}</button>
-					<button data-type="thisWeek" class="btn{{#compare type "===" "thisWeek"}} active{{/compare}}" type="button">{{ i18n.callLogs.thisWeek }}</button>
-					<button data-type="thisMonth" class="btn{{#compare type "===" "thisMonth"}} active{{/compare}}" type="button">{{ i18n.callLogs.thisMonth }}</button>
-					<button data-type="custom" class="btn{{#compare type "===" "custom"}} active{{/compare}}" type="button">{{ i18n.callLogs.custom }}</button>
-				</div>
+		{{#if showFilteredDates}}
+			<div class="fixed-ranges-date">
+				{{ i18n.callLogs.callsFrom }} <span class="highlight-date">{{ toFriendlyDate fromDate "date"}}</span> {{ i18n.callLogs.callsTo }} <span class="highlight-date">{{ toFriendlyDate toDate "date" }}</span>
 			</div>
+		{{/if}}
+	</div>
+	
+	{{#unless miscSettings.hideLoadingSpinner}}
+		<div id="spinner">
+			<div class="monster-loading-view spinner">
+				<i class="icon-telicon-loading-circle monster-loading-spinner"></i>
+			</div>
+		</div>
+	{{/unless}}
+	{{#if miscSettings.showLoadingDots}}
+		<div class="loading-indicator active">
+			<div class="indeterminate"></div>
+		</div>
+	{{/if}}
 
+	<div class="call-logs-content">
+		<div class="button-row">
 			<div class="search-div pull-right">
 				<span class="search-box">
 					{{#if miscSettings.enableGoogleIcons}}
@@ -24,72 +53,36 @@
 					<input type="text" class="search-query" placeholder="{{i18n.table.search}}">
 				</span>	
 			</div>
-			
-		</div>
 
-	</div>
-			
-	<div class="fixed-ranges">
-		
-		<div class="reload-button pull-right">
-			<span class="reload-button">
-				{{#if miscSettings.enableGoogleIcons}}
-					<button type="button" class="monster-button monster-button-secondary reload-cdrs">
-						<span class="material-symbols-medium">refresh</span>
-						<span class="button-label">{{i18n.callLogs.reload}}</span>
-					</button>
-				{{else}}
-					<button type="button" class="monster-button monster-button-secondary reload-cdrs "><i class="fa fa-refresh"></i>{{i18n.callLogs.reload}}</button>
-				{{/if}}
-			</span>
-		</div>
-
-		<div class="download-button pull-right">
-			<span class="download-button">
-				{{#if miscSettings.enableGoogleIcons}}
-					<button type="button" class="monster-button monster-button-secondary download-csv">
-						<span class="material-symbols-medium">download</span>
-						<span class="button-label">{{i18n.download}}</span>
-					</button>
-				{{else}}
-					<button type="button" class="monster-button monster-button-secondary download-csv"><i class="fa fa-download"></i>{{i18n.download}}</button>
-				{{/if}}
-			</span>
-		</div>
-
-		<div class="sub-ranges">
-			<div class="custom-range{{#compare type "===" "custom"}} active{{/compare}}">
-				<span>{{i18n.startDate}}</span>
-				<input id="startDate" type="text" class="date-filter filter-from">
-				<input id="startTime" type="text" class="time-filter filter-from-time">
-				<span>{{i18n.endDate}}</span>
-				<input id="endDate" type="text" class="date-filter filter-to">
-				<input id="endTime" type="text" class="time-filter filter-to-time">
-				<button type="button" class="apply-filter monster-button monster-button-primary" title="{{i18n.callLogs.applyFilter}}">{{i18n.filter}}</button>
+			<div class="reload-button pull-left">
+				<span class="reload-button">
+					{{#if miscSettings.enableGoogleIcons}}
+						<button type="button" class="monster-button monster-button-secondary reload-cdrs">
+							<span class="material-symbols-medium">refresh</span>
+							<span class="button-label">{{i18n.callLogs.reload}}</span>
+						</button>
+					{{else}}
+						<button type="button" class="monster-button monster-button-secondary reload-cdrs "><i class="fa fa-refresh"></i>{{i18n.callLogs.reload}}</button>
+					{{/if}}
+				</span>
 			</div>
 
-			{{#if showFilteredDates}}
-				<div class="fixed-ranges-date">
-					{{ i18n.callLogs.callsFrom }} <span class="highlight-date">{{ toFriendlyDate fromDate "date"}}</span> {{ i18n.callLogs.callsTo }} <span class="highlight-date">{{ toFriendlyDate toDate "date" }}</span>
-				</div>
-			{{/if}}
-		</div>
-	
-	</div>
-
-	{{#unless miscSettings.hideLoadingSpinner}}
-		<div id="spinner">
-			<div class="monster-loading-view spinner">
-				<i class="icon-telicon-loading-circle monster-loading-spinner"></i>
+			<div class="download-button pull-left">
+				<span class="download-button">
+					{{#if miscSettings.enableGoogleIcons}}
+						<button type="button" class="monster-button monster-button-secondary download-csv">
+							<span class="material-symbols-medium">download</span>
+							<span class="button-label">{{i18n.download}}</span>
+						</button>
+					{{else}}
+						<button type="button" class="monster-button monster-button-secondary download-csv"><i class="fa fa-download"></i>{{i18n.download}}</button>
+					{{/if}}
+				</span>
 			</div>
 		</div>
-	{{/unless}}
-
-	<div class="call-logs-content">
 
 		<!-- this has been moved up so the title bar remains -->
 		<div class="grid-row header-row">
-			
 			{{#if miscSettings.enableDirectionText}}
 				<div class="grid-cell direction">
 					<div class="sub-cell cell-top">{{i18n.callLogs.gridHeaders.direction1}}</div>
