@@ -2,12 +2,12 @@
 @import url('../submodules/callLogs/callLogs.css');
 @import url('../style/fonts.css');
 
-.right-content {
+.table-wrapper {
 	margin: 0 auto !important; /* Center align */
 	width: 100% !important; /* Full width */
 }
 
-#voip_container_overlay {
+#call_logs_container_overlay {
 	position: fixed;
 	top: 0;
 	right: 0;
@@ -19,4 +19,66 @@
 
 #spinner {
 	padding-top: 20%;
+}
+
+.loading-indicator.active {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: transparent;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-indicator.active .indeterminate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-indicator.active::before,
+.loading-indicator.active .indeterminate,
+.loading-indicator.active::after {
+    width: 1rem;
+    height: 1rem;
+    background-color: var(--backgroundColor3, #2297FF);
+    border-radius: 100%;
+    display: inline-block ;
+    -webkit-animation: sk-bouncedelay 1.25s infinite ease-in-out both;
+    animation: sk-bouncedelay 1.25s infinite ease-in-out both;
+}
+
+.loading-indicator.active::before {
+    content: '';
+    margin-right: 0.8rem;
+    -webkit-animation-delay: 0s;
+    animation-delay: 0s;
+}
+
+.loading-indicator.active .indeterminate {
+    -webkit-animation-delay: 0.25s;
+    animation-delay: 0.25s;
+}
+
+.loading-indicator.active::after {
+    content: '';
+    margin-left: 0.8rem;
+    -webkit-animation-delay: 0.5s;
+    animation-delay: 0.5s;
+}
+
+@keyframes sk-bouncedelay {
+    0%, 40%, 100% {
+        transform: scale(0.2);
+        opacity: 0.2;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
