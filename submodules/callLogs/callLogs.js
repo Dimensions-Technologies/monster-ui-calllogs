@@ -189,6 +189,7 @@ define(function(require) {
 				submodule: 'callLogs'
 			}));
 			container.empty().append(template);
+			self.alignHeaderScrollbar(template);
 
 			template.find('.loading-indicator').removeClass('active');
 			
@@ -291,6 +292,7 @@ define(function(require) {
 					monster.ui.tooltips(template);
 
 					container.empty().append(template);
+					self.alignHeaderScrollbar(template);
 
 					template.find('.grid-row.set-date-range').hide();
 					template.find('.download-csv').prop('disabled', true);
@@ -381,6 +383,7 @@ define(function(require) {
 					template.find('#spinner').hide();
 					template.find('.loading-indicator').removeClass('active');
 					container.empty().append(template);
+					self.alignHeaderScrollbar(template);
 
 					// disable search and download if there is no data
 					if (cdrs.length > 0) {
@@ -400,8 +403,26 @@ define(function(require) {
 				callback && callback();
 			});
 		},
-		
-		
+
+		// align header scrollbar spacer with actual scrollbar width
+		alignHeaderScrollbar: function(template) {
+			var self = this;
+			var $template = template instanceof jQuery ? template : $(template);
+			var $wrapper = $template.find('.call-logs-grid-wrapper');
+			if (!$wrapper.length) {
+				return;
+			}
+
+			var wrapperEl = $wrapper.get(0);
+			var scrollbarWidth = wrapperEl ? (wrapperEl.offsetWidth - wrapperEl.clientWidth) : 0;
+			if (!scrollbarWidth || scrollbarWidth < 0) {
+				scrollbarWidth = 0;
+			}
+
+			// apply padding-right to header-row so columns align with scrolled content
+			$template.find('.grid-row.header-row').css('padding-right', scrollbarWidth + 'px');
+		},
+
 		callLogsBindEvents: function(params) {
 			var self = this,
 				template = params.template,
@@ -412,6 +433,12 @@ define(function(require) {
 
 			setTimeout(function() {
 				template.find('.search-query').focus();
+			});
+
+			// ensure header scrollbar spacer is aligned now and on resize
+			self.alignHeaderScrollbar(template);
+			$(window).off('resize.callLogsScrollbar').on('resize.callLogsScrollbar', function() {
+				self.alignHeaderScrollbar(template);
 			});
 
 			template.find('.apply-filter').on('click', function(e) {

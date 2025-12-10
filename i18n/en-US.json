@@ -947,7 +947,7 @@
 					"date": "Date",
 					"actions": "Actions"
 				},
-				"search": "Search...",
+				"search": "Search",
 				"dateWithYear": "{{dateText}}, {{year}}"
 			},
 			"days": {

@@ -69,12 +69,17 @@
 	margin-top: 30px;
 }
 
+#calls_grid .call-logs-grid-wrapper {
+	max-height: 900px;
+	overflow: auto;
+}
+
 #calls_grid .call-logs-grid {
 	background-color: #f6f6f6;
 	border-bottom: solid 2px #ddd;
 	border-radius: 2px;
-	max-height: 900px;
-	overflow: auto;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 #calls_grid .grid-row-group:not(:last-of-type) {
@@ -101,6 +106,7 @@
 	font-weight: 600;
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
+	box-sizing: border-box;
 }
 #calls_grid .grid-row:not(.header-row) {
 	font-size: 13px;
@@ -109,7 +115,7 @@
 	border-left: solid 2px #ddd;
 }
 #calls_grid .grid-row:not(.header-row) > .grid-cell:last-child {
-	border-right: solid 2px #ddd;
+	border-right: 0px;
 }
 #calls_grid .grid-row.no-match {
 	display: none;
@@ -260,9 +266,22 @@ body.colorblind #calls_grid .grid-cell.direction .monster-orange {
 	color: #222 !important;
 }
 
-/* hide scroll wheel on call logs table */
-.call-logs-grid::-webkit-scrollbar {
-	display: none; /* Hide scrollbar in WebKit browsers */
+.call-logs-grid-wrapper {
+	scrollbar-width: auto;
+	scrollbar-color: rgba(0,0,0,0.2) transparent;
+	border-right: 2px solid #ddd;
+}
+
+.call-logs-grid-wrapper::-webkit-scrollbar {
+	width: 12px;
+	height: 12px;
+}
+
+.call-logs-grid-wrapper::-webkit-scrollbar-thumb {
+	background-color: rgba(0,0,0,0.2);
+	border-radius: 6px;
+	border: 3px solid transparent;
+	background-clip: padding-box;
 }
 
 #calls_grid .download-button { 
