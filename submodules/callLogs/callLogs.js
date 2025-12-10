@@ -208,8 +208,7 @@ define(function(require) {
 			template.find('.download-csv').prop('disabled', true);
 			template.find('.reload-cdrs').prop('disabled', true);
 			template.find('.search-div .search-query').attr('disabled', true);
-			
-			template.find('.call-logs-content').hide();
+			template.find('.call-logs-grid-wrapper').empty();
 			template.find('.call-logs-loader').hide();
 
 			// set date range and disable date range fields when loading custom data
