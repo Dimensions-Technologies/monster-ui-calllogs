@@ -43,7 +43,7 @@
 
 #call_logs_container .custom-range {
 	display: none;
-	margin-right: 30px;
+	margin-right: 15px;
 }
 
 #call_logs_container .custom-range.active {
@@ -59,12 +59,13 @@
 	margin-right: 5px;
 }
 
-#call_logs_container .custom-range input.date-filter {
+#call_logs_container .custom-range input.date-filter,
+#call_logs_container .custom-range input.time-filter {
 	width: 80px;
 }
 
 #call_logs_container .call-logs-content {
-	margin-top: 12px;
+	margin-top: 30px;
 }
 
 #call_logs_container .call-logs-grid {
