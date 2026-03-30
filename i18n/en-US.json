@@ -1116,8 +1116,12 @@
 		"__version": "v4.0",
 		"loading": "Loading additional information...",
 		"actions": {
-			"report": "Report Call",
-			"details": "Technical Details"
+			"report": "Copy details",
+			"details": "Technical Details",
+			"download": "Download PCAP",
+			"downloadRequested": "PCAP file request submitted for the selected call",
+			"downloadSuccess": "PCAP file has been downloaded successfully",
+			"downloadError": "Unable to download the PCAP file for the selected call"
 		},
 		"downloadTooltip": "In \"Custom\" Mode, you'll need to click on \"Filter\" before clicking on download."
 	},

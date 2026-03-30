@@ -1,7 +1,8 @@
 define(function(require) {
 	var $ = require('jquery'),
 		_ = require('lodash'),
-		monster = require('monster');
+		monster = require('monster'),
+		miscSettings = {};
 
 	var appSubmodules = [
 		'callLogs'
@@ -54,12 +55,51 @@ define(function(require) {
 					name: 'app'
 				}));
 
-			monster.pub('callLogs.render', { parent: template.find('.right-content') });
 
-			parent
-				.empty()
-				.append(template);
-		}
+			monster.waterfall([
+
+				function(callback) {
+
+					// check whitelable doc for dimension configuration for app
+					if (monster.config.whitelabel.hasOwnProperty('dimension')) {
+
+						var data;
+						data = monster.config.whitelabel;
+						
+						if (data.dimension.hasOwnProperty('dt_calllogs')) {
+
+							if (data.dimension.dt_calllogs.hasOwnProperty('miscSettings')) {
+								// support for original miscSettings format
+								if (Array.isArray(data.dimension.dt_calllogs.miscSettings)) {
+									data.dimension.dt_calllogs.miscSettings.forEach(function(action) {
+										miscSettings[action] = true;
+									});
+								} else {
+									miscSettings = data.dimension.dt_calllogs.miscSettings;
+								}
+							}
+							
+						}
+
+						// log to console if enabled
+						if (miscSettings.enableConsoleLogging) {
+							console.log('miscSettings:', miscSettings);
+						}
+
+						callback()
+					} else {
+						callback()
+					}
+				},
+
+				function() {
+					monster.pub('callLogs.render', { miscSettings });
+					parent
+						.empty()
+						.append(template);
+				}
+			]);
+		},
 
 	};
 
