@@ -19,11 +19,7 @@ define(function(require) {
 		css: [ 'app' ],
 
 		i18n: {
-			'de-DE': { customCss: false },
-			'en-US': { customCss: false },
-			'fr-FR': { customCss: false },
-			'ru-RU': { customCss: false },
-			'es-ES': { customCss: false }
+			'en-US': { customCss: false }
 		},
 
 		requests: {},
