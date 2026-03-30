@@ -112,12 +112,14 @@
 #call_logs_container .grid-row.no-match {
 	display: none;
 }
+/*
 #call_logs_container .grid-row-group:not(.open) .grid-row.main-leg > .grid-cell:first-child {
 	border-left: solid 2px #22a5ff;
 }
 #call_logs_container .grid-row-group.open .grid-row > .grid-cell:first-child {
 	border-left: solid 2px #44cc44;
 }
+*/
 #call_logs_container .grid-row.main-leg:hover {
 	background-color: #eee;
 	cursor: pointer;
@@ -272,4 +274,16 @@ body.colorblind #call_logs_container .grid-cell.direction .monster-orange {
     align-items: center;
     justify-content: center;
     height: 38px;
+}
+
+#call_logs_container .grid-row-group.open .grid-row.main-leg {
+    font-weight: 600;
+}
+
+#call_logs_container .grid-row-group.open .grid-row {
+    background: color-mix(in srgb, #22a5ff 6%, transparent) !important;
+}
+
+#call_logs_container .grid-row-group.open .grid-row > .grid-cell:first-child {
+	border-left: solid 2px #22a5ff;
 }
