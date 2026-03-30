@@ -428,7 +428,27 @@ define(function(require) {
 				cdrs = params.cdrs,
 				fromDate = params.fromDate,
 				toDate = params.toDate,
-				startKey = params.nextStartKey;
+				startKey = params.nextStartKey,
+				progressIndicatorStyleId = 'calllogs-extra-legs-progress-style';
+
+			function injectHideProgressIndicatorStyle() {
+				if (miscSettings.hideProgressIndicator) {
+					if (!document.getElementById(progressIndicatorStyleId)) {
+						$('head').append(
+							$('<style>', {
+								id: progressIndicatorStyleId,
+								text: '.progress-indicator.active { display: none !important; }'
+							})
+						);
+					}
+				}
+			}
+
+			function removeHideProgressIndicatorStyle() {
+				if (miscSettings.hideProgressIndicator) {
+					$('#' + progressIndicatorStyleId).remove();
+				}
+			}
 
 			setTimeout(function() {
 				template.find('.search-query').focus();
@@ -629,6 +649,7 @@ define(function(require) {
 				if (rowGroup.hasClass('open')) {
 					rowGroup.removeClass('open');
 					extraLegs.slideUp();
+					removeHideProgressIndicatorStyle();
 
 					// Handle copy diagnostic data button
 					var otherLegs = $this.data('otherLegs');
@@ -637,10 +658,12 @@ define(function(require) {
 					// Reset all slidedDown legs
 					template.find('.grid-row-group').removeClass('open');
 					template.find('.extra-legs').slideUp();
+					removeHideProgressIndicatorStyle();
 
 					// Slide down current leg
 					rowGroup.addClass('open');
 					extraLegs.slideDown();
+					injectHideProgressIndicatorStyle();
 
 					if (!extraLegs.hasClass('data-loaded')) {
 						self.callLogsGetLegs(callId, function(cdrs) {
@@ -680,8 +703,12 @@ define(function(require) {
 										},
 										submodule: 'callLogs'
 									})));
+
+							removeHideProgressIndicatorStyle();
 						});
 					} else {
+						removeHideProgressIndicatorStyle();
+
 						// Handle copy diagnostic data button
 						var otherLegs = $this.data('otherLegs');
 						self.callLogsTriggerCopy(target, otherLegs);
