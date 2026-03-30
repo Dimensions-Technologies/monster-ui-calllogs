@@ -159,23 +159,24 @@
 #call_logs_container .grid-cell:not(:first-of-type) {
 	border-left: solid 1px #e3e3e3;
 }
+
 #call_logs_container .grid-cell.direction {
-	width: 4%;
+	width: 10%;
 }
 #call_logs_container .grid-cell.datetime {
-	width: 12%;
+	width: 11%;
 }
 #call_logs_container .grid-cell.from {
-	width: 25%;
+	width: 23%;
 }
 #call_logs_container .grid-cell.to {
-	width: 25%;
+	width: 23%;
 }
 #call_logs_container .grid-cell.duration {
-	width: 9%;
+	width: 8%;
 }
 #call_logs_container .grid-cell.hangup {
-	width: 15%;
+	width: 14%;
 }
 #call_logs_container .grid-cell.full-width {
 	width: 100%;
@@ -186,7 +187,7 @@
 	font-style: italic;
 }
 #call_logs_container .grid-cell.actions {
-	width: 10%;
+	width: 11%;
 }
 #call_logs_container .grid-cell.actions i:hover {
 	color: #22a5ff;
@@ -262,4 +263,13 @@ body.colorblind #call_logs_container .grid-cell.direction .monster-orange {
 
 #call_logs_container .reload-button { 
 	padding-left: 5px;
+}
+
+#call_logs_container .monster-button.reload-cdrs,
+#call_logs_container .monster-button.download-csv {
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
 }

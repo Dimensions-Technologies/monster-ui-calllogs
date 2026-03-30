@@ -3,10 +3,26 @@
 	<div class="grid-row main-leg" data-id="{{this.id}}">
 		<div class="grid-cell direction">
 			<div class="sub-cell single-cell">
-				{{#if this.isOutboundCall}}
-				<i class="fa fa-arrow-left monster-orange"></i>
+				{{#if ../enableDirectionText}}
+					{{#if this.isOutboundCall}}
+						<div class="sub-cell single-cell">{{ @root.i18n.callLogs.outbound }}</div>
+					{{else}}
+						<div class="sub-cell single-cell">{{ @root.i18n.callLogs.inbound }}</div>
+					{{/if}}
 				{{else}}
-				<i class="fa fa-arrow-right monster-green"></i>
+					{{#if this.isOutboundCall}}
+						{{#if ../enableGoogleIcons}}
+							<span class="material-symbols-interaction-legs-direction">north_east</span>
+						{{else}}
+							<i class="fa fa-arrow-left monster-orange"></i>	
+						{{/if}}
+					{{else}}
+						{{#if ../enableGoogleIcons}}
+							<span class="material-symbols-interaction-legs-direction">south_west</span>
+						{{else}}
+							<i class="fa fa-arrow-right monster-green"></i>	
+						{{/if}}
+					{{/if}}
 				{{/if}}
 			</div>
 		</div>
@@ -42,7 +58,15 @@
 		</div>
 		<div class="grid-cell actions">
 			<div class="sub-cell single-cell">
-				{{#if ../showReport}}<a class="monster-link" target="_blank" href="{{this.mailtoLink}}"><i data-placement="top" data-toggle="tooltip" data-placement="top" data-original-title="{{ @root.i18n.callLogs.actions.report }}" class="fa fa-lg fa-fire-extinguisher"></i></a>{{/if}}
+				<!--{{#if ../showReport}}-->
+					{{#if ../enableGoogleIcons}}
+						<a class="monster-link" target="_blank" href="{{this.mailtoLink}}"><span class="material-symbols-interaction-legs" data-toggle="tooltip" data-placement="top" data-original-title="{{ @root.i18n.callLogs.reportCall }}">report</span></a>
+					{{else}}
+						<a class="monster-link" target="_blank" href="{{this.mailtoLink}}"><i data-placement="top" data-toggle="tooltip" data-placement="top" data-original-title="{{ @root.i18n.callLogs.reportCall }}" class="fa fa-lg fa-fire-extinguisher"></i></a>
+					{{/if}}
+				<!--{{/if}}-->
+
+
 			</div>
 		</div>
 	</div>
