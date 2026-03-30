@@ -2,7 +2,8 @@ define(function(require) {
 	var $ = require('jquery'),
 		_ = require('lodash'),
 		jstz = require('jstz'),
-		monster = require('monster');
+		monster = require('monster'),
+		miscSettings = {};
 
 	var app = {
 		requests: {},
@@ -19,6 +20,9 @@ define(function(require) {
 
 		callLogsRender: function(args) {
 			var self = this;
+
+			// set variables for use elsewhere
+			miscSettings = args.miscSettings;
 
 			self.callLogsGetData(function() {
 				self.callLogsRenderContent(args.parent, args.fromDate, args.toDate, args.type, args.callback);
@@ -324,7 +328,21 @@ define(function(require) {
 
 					if (!extraLegs.hasClass('data-loaded')) {
 						self.callLogsGetLegs(callId, function(cdrs) {
-							var formattedCdrs = self.callLogsFormatCdrs(cdrs);
+							var formattedCdrs = self.callLogsFormatCdrs(cdrs),
+							networkTraceRetention = miscSettings.networkTraceRetention;
+
+							function isWithinSixDays(callDate) {
+								var currentDate = new Date(),
+									sixDaysAgo = new Date(currentDate);
+								sixDaysAgo.setDate(currentDate.getDate() - networkTraceRetention);
+								return callDate >= sixDaysAgo && callDate <= currentDate;
+							}
+							
+							formattedCdrs.forEach(function(cdr) {
+								var callDate = new Date(monster.util.gregorianToDate(cdr.timestamp));
+								cdr.showPcapDownload = isWithinSixDays(callDate);
+								cdr.enableNetworkTraceDownload = miscSettings.enableNetworkTraceDownload;
+							});
 
 							rowGroup.find('.extra-legs')
 									.empty()
@@ -346,6 +364,14 @@ define(function(require) {
 				var cdrId = $(this).parents('.grid-row').data('id');
 				self.callLogsShowDetailsPopup(cdrId);
 			});
+
+			if (miscSettings.enableNetworkTraceDownload) {
+				template.on('click', '.grid-cell.actions .download-pcap', function(e) {
+					e.stopPropagation();
+					var cdrId = $(this).parents('.grid-row').data('id');
+					self.callLogsGetCallId(cdrId);
+				});
+			}
 
 			template.on('click', '.grid-cell.report a', function(e) {
 				e.stopPropagation();
@@ -440,7 +466,9 @@ define(function(require) {
 			}
 		
 			var apiCall = function() {
-				console.log('Getting Call Details');
+				if (miscSettings.enableConsoleLogging) {
+					console.log('Getting Call Details');
+				}
 				self.callApi({
 					resource: 'cdrs.listByInteraction',
 					data: {
@@ -455,12 +483,18 @@ define(function(require) {
 					},
 					
 					error: function(data, status) {
-						console.log('Getting Call Details Error');
+						if (miscSettings.enableConsoleLogging) {
+							console.log('Getting Call Details Error');
+						}
 						if (data.error === "500") {
-							console.log("500 error occurred, datastore_missing");
+							if (miscSettings.enableConsoleLogging) {
+								console.log("500 error occurred, datastore_missing");
+							}
 							callback(null, null, '500');
 						} else if (data.error === "503") {
-							console.log("503 error occurred, retrying...");
+							if (miscSettings.enableConsoleLogging) {
+								console.log("503 error occurred, retrying...");
+							}
 							// wait 10 seconds
 							setTimeout(function() {
 								apiCall();
@@ -605,6 +639,89 @@ define(function(require) {
 				error: function(data, status) {
 					monster.ui.alert('error', self.i18n.active().callLogs.alertMessages.getDetailsError);
 				}
+			});
+		},
+
+		callLogsGetCallId: function(callLogId) {
+			var self = this;
+			self.callApi({
+				resource: 'cdrs.get',
+				data: {
+					accountId: self.accountId,
+					cdrId: callLogId
+				},
+				success: function(data, status) {
+
+					var callId = data.data.call_id,
+						timestamp = monster.util.gregorianToDate(data.data.timestamp);
+
+					self.downloadNetworkTrace(callId, timestamp);
+				},
+				error: function(data, status) {
+					monster.ui.alert('error', self.i18n.active().callLogs.alertMessages.getDetailsError);
+				}
+			});
+		},
+		
+		downloadNetworkTrace: function(callId, timestamp) {
+			var self = this, 
+				apiRoot = monster.config.whitelabel.dimension?.dt_calllogs?.requestSettings?.getNetworkTrace?.apiRoot,
+				url = monster.config.whitelabel.dimension?.dt_calllogs?.requestSettings?.getNetworkTrace?.url,
+				endpointUrl = apiRoot + url;
+
+			monster.ui.toast({
+				type: 'info',
+				message: self.i18n.active().callLogs.actions.downloadRequested,
+				options: {
+					positionClass: 'toast-bottom-right',
+					timeOut: 8000,
+					extendedTimeOut: 5000,
+				}
+			});
+			
+			fetch(endpointUrl, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ call_id: callId, timestamp: timestamp })
+			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Failed to fetch the file');
+				}
+				return response.blob();
+			})
+			.then(blob => {
+				var url = window.URL.createObjectURL(blob);
+				var a = document.createElement('a');
+				a.href = url;
+				a.download = callId + '.pcap';
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				window.URL.revokeObjectURL(url);
+
+				monster.ui.toast({
+					type: 'info',
+					message: self.i18n.active().callLogs.actions.downloadSuccess,
+					options: {
+						positionClass: 'toast-bottom-right',
+						timeOut: 8000,
+						extendedTimeOut: 5000,
+					}
+				});
+			})
+			.catch(error => {
+				monster.ui.toast({
+					type: 'error',
+					message: self.i18n.active().callLogs.actions.downloadError,
+					options: {
+						positionClass: 'toast-bottom-right',
+						timeOut: 8000,
+						extendedTimeOut: 5000,
+					}
+				});
 			});
 		},
 

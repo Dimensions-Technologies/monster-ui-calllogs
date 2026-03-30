@@ -42,6 +42,11 @@
 		<div class="grid-cell actions">
 			<div class="sub-cell single-cell">
 				<i class="fa fa-cog fa-lg details-cdr" data-toggle="tooltip" data-placement="top" data-original-title="{{ @root.i18n.callLogs.actions.details }}"></i>
+				{{#if this.enableNetworkTraceDownload}}
+					{{#if this.showPcapDownload}}
+						<i class="fa fa-download fa-lg download-pcap" data-toggle="tooltip" data-placement="top" data-original-title="{{ @root.i18n.callLogs.actions.download }}"></i>
+					{{/if}}
+				{{/if}}
 			</div>
 		</div>
 	</div>
