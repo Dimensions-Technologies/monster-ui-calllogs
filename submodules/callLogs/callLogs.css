@@ -13,6 +13,7 @@
 
 #calls_grid .sub-ranges > * {
 	display: inline-block;
+	width: 100%;
 }
 
 #calls_grid .fixed-ranges {
