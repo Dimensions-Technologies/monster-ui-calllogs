@@ -849,13 +849,84 @@
 		},
 		"holidays": {
 			"enableTitle": "Are you closed for holidays?",
-			"addLink": "Add Holiday",
-			"singleLink": "Single Day",
-			"rangeLink": "Date Range",
-			"advancedLink": "Advanced",
-			"__comment": "UI-1250: Adding help boxes",
-			"__version": "3.20_s2",
-			"helpHolidays": "Do not forget to set the call routing for when your office is closed for the holidays! To set it up, go in the \"Incoming Call Handling\" section of this page, and select the \"Holidays\" tab."
+			"title": "Holidays",
+			"holidaySchedule": "Holiday Schedule",
+			"buttons": {
+				"addHoliday": "Add Holiday",
+				"importHolidays": "Import Holidays",
+				"includeNationalHolidays": "Include National Holidays"
+			},
+			"listing": {
+				"headers": {
+					"name": "Name",
+					"date": "Date",
+					"actions": "Actions"
+				},
+				"search": "Search",
+				"dateWithYear": "{{dateText}}, {{year}}"
+			},
+			"days": {
+				"monday": "Mon",
+				"tuesday": "Tue",
+				"wednesday": "Wed",
+				"thursday": "Thu",
+				"friday": "Fri",
+				"saturday": "Sat",
+				"sunday": "Sun"
+			},
+			"ordinals": {
+				"first": "First",
+				"second": "Second",
+				"third": "Third",
+				"fourth": "Fourth",
+				"fifth": "Fifth",
+				"last": "Last"
+			},
+			"months": {
+				"january": "Jan",
+				"february": "Feb",
+				"march": "Mar",
+				"april": "Apr",
+				"may": "May",
+				"june": "Jun",
+				"july": "Jul",
+				"august": "Aug",
+				"september": "Sep",
+				"october": "Oct",
+				"november": "Nov",
+				"december": "Dec"
+			},
+			"to": "to",
+			"empty": {
+				"title": "Your Office Holidays Are Empty",
+				"description": "Please use the Add holiday or Import Holidays buttons to enter holidays."
+			},
+			"importOfficeHolidays": {
+				"title": "Import Holidays"
+			},
+			"importNationalOfficeHolidays": {
+				"title": "Select National Holidays",
+				"labels": {
+					"selectYourCountry": "Select Your Country",
+					"description": "Select holidays when your office will be closed",
+					"includeObservedDates": "Include Observed Dates",
+					"selectHolidays": "Select Holidays",
+					"holiday": "holiday"
+				}
+			},
+			"dialogs": {
+				"delete": {
+					"title": "Delete Holiday?",
+					"deleteAll": "Delete all recurring instances",
+					"message": "Delete holiday \"{{variable}}\"? Deleting a holiday will permanently remove it.",
+					"buttons": {
+						"yes": "Yes, Delete Holiday",
+						"no": "No, Keep Holiday"
+					}
+				}
+			},
+			"helpHolidays": "Do not forget to set the call routing for when your office is closed for the holidays! To set it up, go in the \"Incoming Call Handling\" section of this page, and select the \"Holidays\" tab.",
+			"expiredHolidays": "Expired holidays"
 		},
 		"calls": {
 			"openHoursTitle": "Open Hours",
