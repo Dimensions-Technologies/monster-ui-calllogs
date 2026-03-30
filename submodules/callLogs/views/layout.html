@@ -27,12 +27,18 @@
 			
 	<div class="fixed-ranges">
 		
+		<div class="reload-button pull-right">
+			<span class="reload-button">
+				<button type="button" class="monster-button monster-button-secondary reload-cdrs"><i class="fa fa-refresh"></i>{{i18n.callLogs.reload}}</button>
+			</span>
+		</div>
+
 		<div class="download-button pull-right">
 			<span class="download-button">
 				<button type="button" class="monster-button monster-button-secondary download-csv"><i class="fa fa-download"></i>{{i18n.download}}</button>
 			</span>
 		</div>
-		
+
 		<div class="sub-ranges">
 			<div class="custom-range{{#compare type "===" "custom"}} active{{/compare}}">
 				<span>{{i18n.startDate}}</span>
