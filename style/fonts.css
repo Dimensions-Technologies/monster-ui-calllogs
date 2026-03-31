@@ -78,3 +78,7 @@
     color: #22a5ff;
     cursor: pointer;
 }
+
+.grid-row-group.open .material-symbols-interaction-legs {
+    color: #333333
+}
