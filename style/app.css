@@ -71,6 +71,50 @@
     animation-delay: 0.5s;
 }
 
+.cdr-loading-indicator.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.cdr-loading-indicator.active .indeterminate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cdr-loading-indicator.active::before,
+.cdr-loading-indicator.active .indeterminate,
+.cdr-loading-indicator.active::after {
+    width: 1rem;
+    height: 1rem;
+    background-color: var(--backgroundColor3, #2297FF);
+    border-radius: 100%;
+    display: inline-block ;
+    -webkit-animation: sk-bouncedelay 1.25s infinite ease-in-out both;
+    animation: sk-bouncedelay 1.25s infinite ease-in-out both;
+}
+
+.cdr-loading-indicator.active::before {
+    content: '';
+    margin-right: 0.8rem;
+    -webkit-animation-delay: 0s;
+    animation-delay: 0s;
+}
+
+.cdr-loading-indicator.active .indeterminate {
+    -webkit-animation-delay: 0.25s;
+    animation-delay: 0.25s;
+}
+
+.cdr-loading-indicator.active::after {
+    content: '';
+    margin-left: 0.8rem;
+    -webkit-animation-delay: 0.5s;
+    animation-delay: 0.5s;
+}
+
 @keyframes sk-bouncedelay {
     0%, 40%, 100% {
         transform: scale(0.2);
