@@ -257,6 +257,579 @@
 	overflow: auto;
 }
 
+#calls_grid .grid-cell.actions .show-sip-flow {
+	cursor: pointer;
+}
+#calls_grid .grid-cell.actions .show-sip-flow:hover {
+	color: #22a5ff;
+}
+
+/******************** SIP Flow Popup *********************/
+
+.sip-flow-popup {
+	width: 94vw;
+	max-width: 1600px;
+	box-sizing: border-box;
+}
+
+.sip-flow-header {
+	padding: 12px 16px;
+	border-bottom: 1px solid #e3e3e3;
+}
+
+.sip-flow-summary {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 20px;
+	font-size: 13px;
+	color: #333;
+	margin-bottom: 10px;
+}
+
+.sip-flow-summary:empty {
+	display: none;
+}
+
+.sip-flow-summary-call b {
+	font-weight: 600;
+}
+
+.sip-flow-summary-arrow {
+	color: #22a5ff;
+	margin: 0 4px;
+}
+
+.sip-flow-summary-label {
+	color: #999;
+}
+
+/* Legend doubles as the leg filter: each item focuses a single leg. */
+.sip-flow-legend {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+	font-size: 12px;
+	color: #555;
+}
+
+.sip-flow-legend-item {
+	display: inline-flex;
+	align-items: center;
+	max-width: 100%;
+	padding: 4px 9px;
+	border: 1px solid #e2e2e2;
+	border-radius: 4px;
+	background: #fff;
+	cursor: pointer;
+	font-size: 12px;
+	line-height: 16px;
+	color: #555;
+	transition: border-color 0.12s ease, background 0.12s ease;
+}
+
+.sip-flow-legend-item:hover {
+	border-color: #b8b8b8;
+	background: #fafafa;
+}
+
+/* The active chip is outlined in its own leg colour, so the filter in force and the
+   colour it maps to in the diagram are the same piece of information. */
+.sip-flow-legend-item.active {
+	border-color: var(--leg-color, #22a5ff);
+	box-shadow: inset 0 0 0 1px var(--leg-color, #22a5ff);
+	background: #fff;
+	color: #222;
+}
+
+/* "All legs" is a scope reset rather than a leg, so it is set apart from the list. */
+.sip-flow-legend-all {
+	position: relative;
+	margin-right: 11px;
+}
+
+.sip-flow-legend-all::after {
+	content: '';
+	position: absolute;
+	right: -6px;
+	top: 3px;
+	bottom: 3px;
+	width: 1px;
+	background: #e2e2e2;
+}
+
+.sip-flow-legend-label {
+	font-weight: 600;
+	max-width: 280px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.sip-flow-legend-meta {
+	margin-left: 7px;
+	padding-left: 7px;
+	border-left: 1px solid #ececec;
+	color: #999;
+	white-space: nowrap;
+}
+
+.sip-flow-legend-item.active .sip-flow-legend-meta {
+	color: #888;
+}
+
+/* The host scope is not a leg, so it reads as a removable filter token rather than a chip
+   in the leg row. */
+.sip-flow-legend-host {
+	border-color: #22a5ff;
+	background: #e2f1fd;
+	color: #17638f;
+}
+
+.sip-flow-legend-host:hover {
+	border-color: #22a5ff;
+	background: #d6ebfd;
+}
+
+/* Shared by the host chip and the pinned leg chip, so it takes its colour from whichever
+   chip it sits in rather than fixing the host palette. */
+.sip-flow-legend-clear {
+	margin-left: 8px;
+	padding-left: 8px;
+	border-left: 1px solid rgba(0, 0, 0, 0.12);
+	font-size: 14px;
+	line-height: 12px;
+	color: inherit;
+	opacity: 0.65;
+}
+
+.sip-flow-legend-item:hover .sip-flow-legend-clear {
+	opacity: 1;
+}
+
+.sip-flow-legend-host .sip-flow-legend-clear {
+	border-left-color: rgba(23, 99, 143, 0.2);
+	color: #17638f;
+}
+
+.sip-flow-legend-host:hover .sip-flow-legend-clear {
+	color: #0d3f5c;
+}
+
+/* Overflow: the legs past the inline limit fold into a dropdown list. */
+.sip-flow-legend-more-wrap {
+	position: relative;
+	display: inline-flex;
+}
+
+.sip-flow-legend-more {
+	color: #22a5ff;
+	border-style: dashed;
+}
+
+.sip-flow-legend-more-wrap.open .sip-flow-legend-more {
+	border-style: solid;
+	border-color: #22a5ff;
+	background: #f2f9ff;
+}
+
+.sip-flow-legend-overflow {
+	display: none;
+	position: absolute;
+	top: calc(100% + 4px);
+	left: 0;
+	z-index: 30;
+	min-width: 320px;
+	max-width: 460px;
+	max-height: 320px;
+	overflow-y: auto;
+	padding: 4px;
+	border: 1px solid #d8d8d8;
+	border-radius: 4px;
+	background: #fff;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+}
+
+.sip-flow-legend-more-wrap.open .sip-flow-legend-overflow {
+	display: block;
+}
+
+.sip-flow-legend-overflow-title {
+	padding: 4px 8px 6px;
+	font-size: 11px;
+	font-weight: 600;
+	color: #999;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.sip-flow-leg-row {
+	display: flex;
+	align-items: center;
+	padding: 6px 8px;
+	border-radius: 3px;
+	cursor: pointer;
+	font-size: 12px;
+	line-height: 16px;
+	color: #555;
+	white-space: nowrap;
+}
+
+.sip-flow-leg-row:hover {
+	background: #f2f9ff;
+}
+
+.sip-flow-leg-row.active {
+	color: #222;
+	border: 2px solid var(--leg-color, #22a5ff);
+}
+
+/* In a vertical list the counts read better ranged right, against a full-width label. */
+.sip-flow-leg-row .sip-flow-legend-label {
+	max-width: none;
+}
+
+.sip-flow-leg-row .sip-flow-legend-meta {
+	margin-left: auto;
+	padding-left: 12px;
+	border-left: none;
+}
+
+.sip-flow-swatch {
+	display: inline-block;
+	width: 11px;
+	height: 11px;
+	border-radius: 2px;
+	margin-right: 7px;
+	/* Keeps pale colours visible against the white chip. */
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+	flex: 0 0 auto;
+}
+
+/* Miniature of every leg colour, standing in for a single swatch on "All legs". */
+.sip-flow-swatch-all {
+	display: inline-flex;
+	width: 14px;
+	overflow: hidden;
+}
+
+.sip-flow-swatch-all > span {
+	flex: 1 1 auto;
+}
+
+/* Both the interaction hint and the arrow-style key live here: neither is a control, so
+   neither belongs among the leg filter chips above. */
+.sip-flow-hint {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 8px;
+	font-size: 11px;
+	color: #999;
+	font-style: italic;
+}
+
+.sip-flow-hint-key {
+	margin-left: 9px;
+	padding-left: 9px;
+	border-left: 1px solid #e2e2e2;
+}
+
+/* Body is a flex row: the ladder reflows when the detail pane opens rather than
+   being covered by it. */
+.sip-flow-body {
+	display: flex;
+	align-items: stretch;
+	height: 64vh;
+	min-height: 340px;
+	max-height: 720px;
+}
+
+.sip-flow-main {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+/* Frozen column headers. */
+.sip-flow-topbar {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: stretch;
+	border-bottom: 1px solid #ececec;
+	background: #fff;
+}
+
+.sip-flow-corner {
+	flex: 0 0 auto;
+	width: 116px;
+}
+
+.sip-flow-actorstrip {
+	flex: 1 1 auto;
+	min-width: 0;
+	overflow: hidden;
+}
+
+.sip-flow-panes {
+	flex: 1 1 auto;
+	display: flex;
+	align-items: stretch;
+	min-height: 0;
+}
+
+/* Frozen timestamp gutter. */
+.sip-flow-gutter {
+	flex: 0 0 auto;
+	width: 116px;
+	overflow: hidden;
+	border-right: 1px solid #ececec;
+	background: #fcfcfc;
+}
+
+/* overflow-y is always "scroll" so the measured width does not change between
+   renders (which would make the fit-to-width calculation oscillate). */
+.sip-flow-canvas {
+	flex: 1 1 auto;
+	min-width: 0;
+	overflow-x: auto;
+	overflow-y: scroll;
+}
+
+.sip-flow-detail-wrapper {
+	flex: 0 0 400px;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	border-left: 1px solid #e3e3e3;
+	background: #fafafa;
+}
+
+.sip-flow-body.detail-hidden .sip-flow-detail-wrapper {
+	display: none;
+}
+
+.sip-flow-detail-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 12px;
+	border-bottom: 1px solid #e3e3e3;
+	background: #f1f1f1;
+	flex: 0 0 auto;
+}
+
+.sip-flow-detail-title {
+	font-size: 12px;
+	font-weight: 600;
+	color: #555;
+}
+
+.sip-flow-detail-actions {
+	display: inline-flex;
+	align-items: center;
+}
+
+.sip-flow-detail-copy {
+	cursor: pointer;
+	font-size: 11px;
+	color: #22a5ff;
+	margin-right: 12px;
+}
+
+.sip-flow-detail-copy:hover {
+	text-decoration: underline;
+}
+
+.sip-flow-detail-close {
+	cursor: pointer;
+	font-size: 18px;
+	line-height: 1;
+	color: #999;
+	padding: 0 4px;
+}
+
+.sip-flow-detail-close:hover {
+	color: #333;
+}
+
+.sip-flow-detail-meta {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 2px 8px;
+	padding: 8px 12px;
+	border-bottom: 1px solid #ececec;
+	font-size: 11px;
+	color: #666;
+	background: #fff;
+}
+
+.sip-flow-detail-meta:empty {
+	display: none;
+}
+
+.sip-flow-detail-chip {
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-radius: 2px;
+	flex: 0 0 auto;
+}
+
+.sip-flow-detail-route {
+	font-weight: 600;
+	color: #333;
+	word-break: break-all;
+}
+
+.sip-flow-detail {
+	flex: 1 1 auto;
+	overflow: auto;
+	margin: 0;
+	padding: 12px;
+	font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+	font-size: 11px;
+	line-height: 1.45;
+	color: #333;
+	white-space: pre-wrap;
+	word-break: break-word;
+	background: transparent;
+	border: none;
+}
+
+.sip-flow-detail .sip-start-line {
+	font-weight: 700;
+	color: #1a4f76;
+}
+
+.sip-flow-detail .sip-header-name {
+	color: #8e44ad;
+}
+
+.sip-flow-detail .sip-body-line {
+	color: #777;
+}
+
+/******************** SIP Flow diagram (SVG) *********************/
+
+.sip-flow-svg {
+	display: block;
+}
+
+.sip-flow-lifeline {
+	stroke: #d6d6d6;
+	stroke-width: 1;
+	stroke-dasharray: 3 3;
+}
+
+/* Column headers are clickable: they scope the diagram to the legs through that host. */
+.sip-flow-actor {
+	cursor: pointer;
+}
+
+.sip-flow-actor-box {
+	fill: #f1f6fb;
+	stroke: #22a5ff;
+	stroke-width: 1;
+}
+
+.sip-flow-actor:hover .sip-flow-actor-box {
+	fill: #e2f1fd;
+	stroke-width: 1.5;
+}
+
+.sip-flow-actor.active .sip-flow-actor-box {
+	fill: #cfe8fc;
+	stroke-width: 2;
+}
+
+.sip-flow-actor-ip {
+	font-size: 12px;
+	font-weight: 600;
+	fill: #333;
+}
+
+/* Friendly platform name leads, with the IP demoted beneath it. */
+.sip-flow-actor-name {
+	font-size: 12px;
+	font-weight: 600;
+	fill: #333;
+}
+
+.sip-flow-actor-ip.sip-flow-actor-sub {
+	font-size: 10px;
+	font-weight: 400;
+	fill: #8a8a8a;
+}
+
+.sip-flow-arrow {
+	stroke-width: 1.6;
+}
+
+.sip-flow-label {
+	font-size: 11px;
+	font-weight: 600;
+}
+
+/* Tabular figures keep the digits in a column, which is most of what makes a stack of
+   timestamps scannable. */
+.sip-flow-time {
+	font-size: 12px;
+	fill: #3c3c3c;
+	font-variant-numeric: tabular-nums;
+	font-feature-settings: "tnum";
+}
+
+.sip-flow-reltime {
+	font-size: 10px;
+	fill: #8a8a8a;
+	font-variant-numeric: tabular-nums;
+	font-feature-settings: "tnum";
+}
+
+.sip-flow-gutter-row.selected .sip-flow-time {
+	fill: #1a1a1a;
+}
+
+/* The row rect is the only hit target; everything drawn on top of it must not
+   swallow the click (siblings would not bubble to it). */
+.sip-flow-arrow,
+.sip-flow-arrowhead,
+.sip-flow-label,
+.sip-flow-time,
+.sip-flow-reltime,
+.sip-flow-legtick,
+.sip-flow-lifeline {
+	pointer-events: none;
+}
+
+.sip-flow-popup:focus {
+	outline: none;
+}
+
+.sip-flow-row {
+	fill: transparent;
+	cursor: pointer;
+}
+
+.sip-flow-msg.alt .sip-flow-row,
+.sip-flow-gutter-row.alt .sip-flow-row {
+	fill: rgba(0, 0, 0, 0.018);
+}
+
+.sip-flow-msg:hover .sip-flow-row,
+.sip-flow-gutter-row:hover .sip-flow-row {
+	fill: rgba(34, 165, 255, 0.08);
+}
+
+.sip-flow-msg.selected .sip-flow-row,
+.sip-flow-gutter-row.selected .sip-flow-row {
+	fill: rgba(34, 165, 255, 0.14);
+}
+
+
 /********************** COLORBLIND SETTINGS **********************/
 body.colorblind #calls_grid .grid-row:not(.header-row) .grid-cell.direction {
 	background-color: #999;

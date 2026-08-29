@@ -1245,11 +1245,31 @@
 		"loading": "Loading additional information...",
 		"actions": {
 			"report": "Copy Details",
+			"viewSipFlow": "View SIP Flow",
 			"details": "Technical Details",
 			"download": "Download PCAP",
 			"downloadRequested": "PCAP file request submitted for the selected call",
 			"downloadSuccess": "PCAP file has been downloaded successfully",
 			"downloadError": "Unable to download the PCAP file for the selected call"
+		},
+		"sipFlow": {
+			"title": "SIP Call Flow",
+			"loadError": "Unable to load the SIP flow data for this call.",
+			"noData": "No SIP messages were found for this call.",
+			"selectHint": "Click any message to see its full SIP details. Narrow the diagram with a leg above, or with a host at the top of a column to see every leg through it — click either again to widen back out. Use the up and down arrow keys to step through messages.",
+			"lineStyleHint": "Solid = request · Dashed = response",
+			"messageDetails": "Message Details",
+			"allLegs": "All legs",
+			"legCount": "legs",
+			"moreLegs": "more",
+			"hostScope": "Through",
+			"messageCount": "msgs",
+			"copy": "Copy",
+			"copied": "SIP message copied to the clipboard",
+			"close": "Close",
+			"duration": "Duration",
+			"hangup": "Hangup",
+			"date": "Date"
 		},
 		"diagnosticCallData": {
 			"accountId": "Account ID: {{variable}}",

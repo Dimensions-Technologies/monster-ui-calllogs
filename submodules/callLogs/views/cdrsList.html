@@ -58,8 +58,16 @@
 		</div>
 		<div class="grid-cell actions">
 			<div class="sub-cell single-cell">
+				{{#if ../enableSipFlow}}
+					{{#if ../enableGoogleIcons}}
+						<span class="material-symbols-interaction-legs show-sip-flow" data-toggle="tooltip" data-placement="top" data-original-title="{{ @root.i18n.callLogs.actions.viewSipFlow }}" data-id="{{this.id}}" data-diag-data="{{this.diagData}}">sip</span>
+					{{else}}
+						<i data-placement="top" data-toggle="tooltip" data-original-title="{{ @root.i18n.callLogs.actions.viewSipFlow }}" class="fa fa-lg fa-exchange show-sip-flow" data-id="{{this.id}}" data-diag-data="{{this.diagData}}"></i>
+					{{/if}}
+				{{/if}}
+
 				<!--{{#if ../showReport}}-->
-				
+
 					{{#if ../enableGoogleIcons}}
 						<span class="material-symbols-interaction-legs copy-diag-data" data-toggle="tooltip" data-placement="top" data-original-title="{{ @root.i18n.callLogs.actions.report }}" data-id="{{this.id}}" data-diag-data="{{this.diagData}}">content_copy</span>
 					{{else}}
