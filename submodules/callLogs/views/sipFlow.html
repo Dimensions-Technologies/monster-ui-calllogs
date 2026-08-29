@@ -1,0 +1,35 @@
+<div class="sip-flow-popup" tabindex="-1">
+	<div class="sip-flow-header">
+		<div class="sip-flow-summary"></div>
+		<div class="sip-flow-legend"></div>
+		<div class="sip-flow-hint">
+			<span>{{i18n.callLogs.sipFlow.selectHint}}</span>
+			<span class="sip-flow-hint-key">{{i18n.callLogs.sipFlow.lineStyleHint}}</span>
+		</div>
+	</div>
+	<div class="sip-flow-body detail-hidden">
+		<div class="sip-flow-main">
+			<!-- Frozen column headers: scrolls horizontally with the ladder, never vertically. -->
+			<div class="sip-flow-topbar">
+				<div class="sip-flow-corner"></div>
+				<div class="sip-flow-actorstrip"></div>
+			</div>
+			<div class="sip-flow-panes">
+				<!-- Frozen timestamp gutter: scrolls vertically with the ladder, never horizontally. -->
+				<div class="sip-flow-gutter"></div>
+				<div class="sip-flow-canvas"></div>
+			</div>
+		</div>
+		<div class="sip-flow-detail-wrapper">
+			<div class="sip-flow-detail-header">
+				<span class="sip-flow-detail-title">{{i18n.callLogs.sipFlow.messageDetails}}</span>
+				<span class="sip-flow-detail-actions">
+					<span class="sip-flow-detail-copy">{{i18n.callLogs.sipFlow.copy}}</span>
+					<span class="sip-flow-detail-close" title="{{i18n.callLogs.sipFlow.close}}">&times;</span>
+				</span>
+			</div>
+			<div class="sip-flow-detail-meta"></div>
+			<pre class="sip-flow-detail"></pre>
+		</div>
+	</div>
+</div>

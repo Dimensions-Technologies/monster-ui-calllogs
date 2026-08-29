@@ -22,21 +22,42 @@
 				{{/if}}
 			{{/if}}
 		</div>
-		<div class="grid-cell to{{#if formatted.toDeviceName}} high-cell{{/if}}">
-			{{#if this.toName}}
-			<div class="sub-cell">{{formatPhoneNumber this.toNumber}}</div>
-			<div class="sub-cell">{{this.toName}}</div>
-			{{else}}
-			<div class="sub-cell single-cell">{{formatPhoneNumber this.toNumber}}</div>
-			{{/if}}
+
+		{{#if @root.miscSettings.defaultCallLegView}}
+			<div class="grid-cell to{{#if formatted.toDeviceName}} high-cell{{/if}}">
+				{{#if this.toName}}
+				<div class="sub-cell">{{formatPhoneNumber this.toNumber}}</div>
+				<div class="sub-cell">{{this.toName}}</div>
+				{{else}}
+				<div class="sub-cell single-cell">{{formatPhoneNumber this.toNumber}}</div>
+				{{/if}}
+				{{#if formatted.toDeviceName}}
+					{{#if this.hideDeviceIcons}}
+						<div class="sub-cell" data-placement="top" data-toggle="tooltip" data-original-title="{{ formatted.deviceTooltip }}">{{formatted.toDeviceName}}</div>
+					{{else}}
+						<div class="sub-cell"><i class="{{ formatted.deviceIcon }}" data-placement="top" data-toggle="tooltip" data-original-title="{{ formatted.deviceTooltip }}"></i>{{formatted.toDeviceName}}</div>
+					{{/if}}
+				{{/if}}
+			</div>
+		{{else}}
+		<div class="grid-cell to{{#if formatted.toDeviceName}} {{/if}}">
 			{{#if formatted.toDeviceName}}
 				{{#if this.hideDeviceIcons}}
-					<div class="sub-cell" data-placement="top" data-toggle="tooltip" data-original-title="{{ formatted.deviceTooltip }}">{{formatted.toDeviceName}}</div>
+					<div class="sub-cell single-cell" data-placement="top" data-toggle="tooltip" data-original-title="{{ formatted.deviceTooltip }}">{{formatted.toDeviceName}}</div>
 				{{else}}
-					<div class="sub-cell"><i class="{{ formatted.deviceIcon }}" data-placement="top" data-toggle="tooltip" data-original-title="{{ formatted.deviceTooltip }}"></i>{{formatted.toDeviceName}}</div>
+					<div class="sub-cell single-cell"><i class="{{ formatted.deviceIcon }}" data-placement="top" data-toggle="tooltip" data-original-title="{{ formatted.deviceTooltip }}"></i>{{formatted.toDeviceName}}</div>
+				{{/if}}
+			{{else}}
+				{{#if this.toName}}
+					<div class="sub-cell">{{formatPhoneNumber this.toNumber}}</div>
+					<div class="sub-cell">{{this.toName}}</div>
+				{{else}}
+					<div class="sub-cell single-cell">{{formatPhoneNumber this.toNumber}}</div>
 				{{/if}}
 			{{/if}}
 		</div>
+		{{/if}}
+
 		<div class="grid-cell duration">
 			<div class="sub-cell single-cell">
 				{{this.duration}}
